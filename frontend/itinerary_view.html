@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary View - Traveloop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep: #071C3F;
+            --azure-blue: #1A6EF5;
+            --sky-blue: #4FA3F7;
+            --journey-gold: #F5C842;
+            --mist-white: #E8F0FE;
+            --slate-muted: #8BA7D4;
+            --font-heading: 'Playfair Display', serif;
+            --font-ui: 'DM Sans', sans-serif;
+            
+            /* Theme Variables - Default Dark */
+            --bg-color: var(--ocean-deep);
+            --text-color: var(--mist-white);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(139, 167, 212, 0.2);
+            --nav-bg: rgba(7, 28, 63, 0.6);
+        }
+
+        body.light-mode {
+            --bg-color: #F0F4F8;
+            --text-color: #071C3F;
+            --card-bg: #FFFFFF;
+            --card-border: rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --slate-muted: #546E7A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-ui);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* Background Effects */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+        }
+
+        .glow-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%);
+            top: -100px;
+            right: -200px;
+        }
+
+        .glow-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            opacity: 0.2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--mist-white);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.2;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0.8;
+                transform: scale(1.5);
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.4s;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .brand-logo {
+            height: 80px;
+            width: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--slate-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-color);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--azure-blue);
+            cursor: pointer;
+        }
+
+        /* Container & Toolbar */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 5%;
+            padding-bottom: 100px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(139, 167, 212, 0.2);
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--azure-blue);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .search-bar i {
+            color: var(--slate-muted);
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            width: 100%;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--slate-muted);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(139, 167, 212, 0.2);
+            color: var(--slate-muted);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-color);
+        }
+
+        /* Itinerary specific styles */
+        .itinerary-title {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-color);
+        }
+
+        .itinerary-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            position: relative;
+        }
+
+        .itinerary-headers {
+            display: flex;
+            margin-bottom: 10px;
+            padding-left: 110px;
+        }
+
+        .header-activity {
+            flex: 1;
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .header-expense {
+            width: 200px;
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--text-color);
+            text-align: center;
+            margin-left: 30px;
+        }
+
+        .day-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            position: relative;
+        }
+
+        .day-tag {
+            background: rgba(26, 110, 245, 0.1);
+            border: 1px solid var(--azure-blue);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 80px;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(26, 110, 245, 0.2);
+            flex-shrink: 0;
+        }
+
+        .activities-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-row {
+            display: flex;
+            align-items: stretch;
+            gap: 30px;
+            position: relative;
+        }
+
+        .activity-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 25px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--azure-blue);
+            background: var(--card-bg);
+            filter: brightness(1.05);
+        }
+
+        .activity-time {
+            color: var(--journey-gold);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .activity-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .activity-desc {
+            color: var(--slate-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .expense-card {
+            width: 200px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: border-color 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .expense-card:hover {
+            border-color: var(--journey-gold);
+            background: rgba(245, 200, 66, 0.05);
+        }
+
+        .expense-label {
+            color: var(--slate-muted);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .expense-amount {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+        }
+
+        .sequence-arrow {
+            text-align: center;
+            padding: 0;
+            color: var(--azure-blue);
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .itinerary-headers {
+                display: none;
+            }
+
+            .day-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .activity-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .expense-card {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 20px;
+            }
+
+            .sequence-arrow {
+                width: 100% !important;
+                margin: 5px 0;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="traveloop-screens.html"><img
+                    src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo"
+                    class="brand-logo" style="cursor: pointer;"></a>
+        </div>
+        <div class="nav-links">
+            <a href="traveloop-screens.html">Explore</a>
+            <a href="user_trips.html">My Trips</a>
+            <a href="community_tab.html">Community</a>
+            <a href="itinerary_view.html" class="active">Itinerary View</a>
+            <a href="packing_checklist.html">Packing checklist</a>
+            <a href="expense_splitter.html">Expense Splitter</a>
+        </div>
+        <div class="nav-profile" style="display: flex; align-items: center; gap: 20px;">
+            <button id="theme-toggle"
+                style="background: none; border: none; color: var(--journey-gold); cursor: pointer; font-size: 1.2rem;">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <a href="userpanel.html"><img src="https://ui-avatars.com/api/?name=User&background=1A6EF5&color=fff"
+                    alt="Profile" class="avatar"></a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Search and Filters -->
+        <div class="toolbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search itinerary...">
+            </div>
+            <div class="filters">
+                <button class="filter-btn">Group by <i class="fa-solid fa-caret-down"></i></button>
+                <button class="filter-btn">Filter <i class="fa-solid fa-caret-down"></i></button>
+                <button class="filter-btn">Sort by... <i class="fa-solid fa-caret-down"></i></button>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 class="itinerary-title" style="margin-bottom: 0;">Itinerary for Paris, France</h1>
+            <button id="ai-generate-btn" class="btn-primary"
+                style="padding: 10px 20px; border-radius: 50px; background: linear-gradient(135deg, #f5c842, #b38b00); color: #1a1000; box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3); border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Generate with AI
+            </button>
+        </div>
+
+        <div id="ai-loading" style="display: none; text-align: center; margin-bottom: 2rem;">
+            <div class="typing-indicator" style="justify-content: center; gap: 8px;">
+                <span
+                    style="width: 10px; height: 10px; background: var(--journey-gold); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;"></span>
+                <span
+                    style="width: 10px; height: 10px; background: var(--journey-gold); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: -0.32s;"></span>
+                <span
+                    style="width: 10px; height: 10px; background: var(--journey-gold); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: -0.16s;"></span>
+            </div>
+            <p style="margin-top: 10px; color: var(--journey-gold); font-weight: 600;">AI is crafting your adventure...
+            </p>
+        </div>
+
+        <div class="itinerary-layout">
+            <div class="itinerary-headers">
+                <div class="header-activity">Physical Activity</div>
+                <div class="header-expense">Expense</div>
+            </div>
+
+            <!-- Day 1 -->
+            <div class="day-section">
+                <div class="day-tag">Day 1</div>
+                <div class="activities-wrapper">
+                    <!-- Activity 1 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">09:00 AM</div>
+                            <div class="activity-name">Eiffel Tower Summit Tour</div>
+                            <div class="activity-desc">Start the day with breathtaking views of the city. Includes
+                                skip-the-line access.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Tickets</span>
+                            <span class="expense-amount">$85</span>
+                        </div>
+                    </div>
+                    <div class="sequence-arrow" style="width: calc(100% - 230px);"><i
+                            class="fa-solid fa-arrow-down"></i></div>
+
+                    <!-- Activity 2 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">01:00 PM</div>
+                            <div class="activity-name">Lunch at Le Jules Verne</div>
+                            <div class="activity-desc">Fine dining experience with authentic French cuisine on the
+                                second floor of the Eiffel Tower.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Dining</span>
+                            <span class="expense-amount">$150</span>
+                        </div>
+                    </div>
+                    <div class="sequence-arrow" style="width: calc(100% - 230px);"><i
+                            class="fa-solid fa-arrow-down"></i></div>
+
+                    <!-- Activity 3 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">04:00 PM</div>
+                            <div class="activity-name">Seine River Cruise</div>
+                            <div class="activity-desc">Relaxing boat tour to see the city's historic landmarks at golden
+                                hour.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Activity</span>
+                            <span class="expense-amount">$30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 2 -->
+            <div class="day-section">
+                <div class="day-tag">Day 2</div>
+                <div class="activities-wrapper">
+                    <!-- Activity 1 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">10:00 AM</div>
+                            <div class="activity-name">Louvre Museum Exploration</div>
+                            <div class="activity-desc">Guided tour of the world's largest art museum, prioritizing the
+                                Mona Lisa and Venus de Milo.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Tickets</span>
+                            <span class="expense-amount">$65</span>
+                        </div>
+                    </div>
+                    <div class="sequence-arrow" style="width: calc(100% - 230px);"><i
+                            class="fa-solid fa-arrow-down"></i></div>
+
+                    <!-- Activity 2 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">02:30 PM</div>
+                            <div class="activity-name">Montmartre Walking Tour</div>
+                            <div class="activity-desc">Explore the historic artist district, visiting Sacré-Cœur and
+                                famous local cafes.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Guide</span>
+                            <span class="expense-amount">$40</span>
+                        </div>
+                    </div>
+                    <div class="sequence-arrow" style="width: calc(100% - 230px);"><i
+                            class="fa-solid fa-arrow-down"></i></div>
+
+                    <!-- Activity 3 -->
+                    <div class="activity-row">
+                        <div class="activity-card">
+                            <div class="activity-time">07:00 PM</div>
+                            <div class="activity-name">Moulin Rouge Cabaret Show</div>
+                            <div class="activity-desc">An unforgettable evening of entertainment with drinks and classic
+                                cabaret performances.</div>
+                        </div>
+                        <div class="expense-card">
+                            <span class="expense-label">Nightlife</span>
+                            <span class="expense-amount">$120</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDarkMode = true;
+        themeBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                document.body.style.backgroundColor = '#071C3F';
+                document.body.style.color = '#E8F0FE';
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                document.body.style.backgroundColor = '#f0f4f8';
+                document.body.style.color = '#071C3F';
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
+
+        // AI Itinerary Generation Logic
+        const aiBtn = document.getElementById('ai-generate-btn');
+        const loading = document.getElementById('ai-loading');
+        const layout = document.querySelector('.itinerary-layout');
+
+        aiBtn.addEventListener('click', async () => {
+            const destination = "Paris, France";
+            const apiKey = "YOUR_GEMINI_API_KEY_HERE"; // Use the same key from chatbot.js
+
+            loading.style.display = 'block';
+            aiBtn.disabled = true;
+
+            try {
+                if (apiKey === "YOUR_GEMINI_API_KEY_HERE") {
+                    console.log("Running in Demo Mode...");
+                    await new Promise(r => setTimeout(r, 1500)); // Simulate delay
+                    const mockItinerary = {
+                        "days": [
+                            {
+                                "day": 1,
+                                "activities": [
+                                    { "time": "09:00 AM", "name": "Louvre Museum", "description": "Explore the world's largest art museum.", "expense": 20 },
+                                    { "time": "01:00 PM", "name": "Local Bistro Lunch", "description": "Enjoy authentic French crepes.", "expense": 35 }
+                                ]
+                            },
+                            {
+                                "day": 2,
+                                "activities": [
+                                    { "time": "10:00 AM", "name": "Montmartre Walk", "description": "Visit the Sacré-Cœur Basilica.", "expense": 0 },
+                                    { "time": "08:00 PM", "name": "River Seine Cruise", "description": "Romantic boat tour at night.", "expense": 45 }
+                                ]
+                            }
+                        ]
+                    };
+                    renderAIItinerary(mockItinerary);
+                    return;
+                }
+
+                const prompt = `Generate a 2-day travel itinerary for ${destination} in JSON format. 
+                Each day should have a list of activities with time, name, description, and estimated expense amount (number only). 
+                Format: { "days": [ { "day": 1, "activities": [ { "time": "09:00 AM", "name": "...", "description": "...", "expense": 50 } ] } ] }`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                let resultText = data.candidates[0].content.parts[0].text;
+                // Robust JSON extraction
+                const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("Invalid AI response format.");
+                const itinerary = JSON.parse(jsonMatch[0]);
+
+                renderAIItinerary(itinerary);
+            } catch (error) {
+                console.error("AI Error:", error);
+                alert("AI Error: " + error.message + "\n\nTip: Make sure your Gemini API Key is valid and that you have internet access.");
+            } finally {
+                loading.style.display = 'none';
+                aiBtn.disabled = false;
+            }
+        });
+
+        function renderAIItinerary(itinerary) {
+            layout.innerHTML = `
+                <div class="itinerary-headers">
+                    <div class="header-activity">Physical Activity</div>
+                    <div class="header-expense">Expense</div>
+                </div>
+            `;
+
+            itinerary.days.forEach(day => {
+                const daySection = document.createElement('div');
+                daySection.className = 'day-section';
+
+                let activitiesHtml = '';
+                day.activities.forEach((act, idx) => {
+                    activitiesHtml += `
+                        <div class="activity-row">
+                            <div class="activity-card">
+                                <div class="activity-time">${act.time}</div>
+                                <div class="activity-name">${act.name}</div>
+                                <div class="activity-desc">${act.description}</div>
+                            </div>
+                            <div class="expense-card">
+                                <span class="expense-label">Est. Cost</span>
+                                <span class="expense-amount">$${act.expense}</span>
+                            </div>
+                        </div>
+                        ${idx < day.activities.length - 1 ? '<div class="sequence-arrow" style="width: calc(100% - 230px);"><i class="fa-solid fa-arrow-down"></i></div>' : ''}
+                    `;
+                });
+
+                daySection.innerHTML = `
+                    <div class="day-tag">Day ${day.day}</div>
+                    <div class="activities-wrapper">${activitiesHtml}</div>
+                `;
+                layout.appendChild(daySection);
+            });
+        }
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - Traveloop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep: #071C3F;
+            --azure-blue: #1A6EF5;
+            --sky-blue: #4FA3F7;
+            --journey-gold: #F5C842;
+            --mist-white: #E8F0FE;
+            --slate-muted: #8BA7D4;
+            --font-heading: 'Playfair Display', serif;
+            --font-ui: 'DM Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--ocean-deep); color: var(--mist-white); font-family: var(--font-ui); min-height: 100vh; position: relative; overflow-x: hidden; }
+        
+        /* Background Effects */
+        .background-effects { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; pointer-events: none; }
+        .glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; }
+        .glow-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%); top: -100px; right: -200px; }
+        .glow-2 { width: 400px; height: 400px; background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%); bottom: -100px; left: -100px; opacity: 0.2; }
+        .particle { position: absolute; width: 2px; height: 2px; background-color: var(--mist-white); border-radius: 50%; opacity: 0.5; animation: twinkle infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.5); } }
+
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: rgba(7, 28, 63, 0.6); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(139, 167, 212, 0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--mist-white); }
+        .brand-logo { height: 80px; width: 80px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4)); }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--slate-muted); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: var(--mist-white); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--azure-blue); cursor: pointer; }
+
+        /* Container & Toolbar */
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 5%; padding-bottom: 100px; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
+        .search-bar { flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(139, 167, 212, 0.2); border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: border-color 0.3s ease; }
+        .search-bar:focus-within { border-color: var(--azure-blue); background: rgba(255, 255, 255, 0.05); }
+        .search-bar i { color: var(--slate-muted); }
+        .search-bar input { background: transparent; border: none; color: var(--mist-white); width: 100%; font-family: var(--font-ui); font-size: 1rem; outline: none; }
+        .search-bar input::placeholder { color: var(--slate-muted); }
+        .filters { display: flex; gap: 15px; }
+        .filter-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(139, 167, 212, 0.2); color: var(--slate-muted); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: var(--font-ui); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+        .filter-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--mist-white); }
+
+        /* Community Specific Styles */
+        .community-header { text-align: center; margin-bottom: 50px; }
+        .community-title { font-family: var(--font-heading); font-size: 2.5rem; color: var(--mist-white); margin-bottom: 10px; }
+        .community-subtitle { color: var(--slate-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+
+        .post-list { display: flex; flex-direction: column; gap: 30px; }
+        
+        .post-item { display: flex; gap: 20px; align-items: flex-start; }
+        
+        .post-avatar-wrapper { flex-shrink: 0; }
+        .post-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--azure-blue); object-fit: cover; box-shadow: 0 4px 10px rgba(26, 110, 245, 0.3); }
+
+        .post-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(139, 167, 212, 0.15);
+            border-radius: 16px;
+            padding: 25px;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .post-content:hover {
+            transform: translateY(-2px);
+            border-color: rgba(79, 163, 247, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .post-author { font-weight: 700; font-size: 1.1rem; color: var(--mist-white); display: flex; align-items: center; gap: 8px; }
+        .author-badge { color: var(--journey-gold); font-size: 0.9rem; }
+        .post-time { color: var(--slate-muted); font-size: 0.85rem; }
+
+        .post-trip-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(26, 110, 245, 0.15); color: var(--sky-blue); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; }
+        .post-trip-tag i { font-size: 0.8rem; }
+
+        .post-body { color: var(--mist-white); opacity: 0.9; line-height: 1.6; font-size: 0.95rem; margin-bottom: 20px; }
+
+        .post-actions { display: flex; gap: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; }
+        .action-btn { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--slate-muted); font-family: var(--font-ui); font-size: 0.9rem; cursor: pointer; transition: color 0.3s ease; }
+        .action-btn:hover { color: var(--azure-blue); }
+        .action-btn.liked { color: #f91880; }
+        .action-btn i { font-size: 1.1rem; }
+
+        /* Compose FAB */
+        .fab {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background-color: var(--journey-gold);
+            color: var(--ocean-deep);
+            padding: 16px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            box-shadow: 0 10px 20px rgba(245, 200, 66, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+        }
+
+        .fab:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(245, 200, 66, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .post-item { flex-direction: column; gap: 10px; }
+            .post-avatar-wrapper { display: flex; align-items: center; gap: 15px; width: 100%; }
+            .post-author-mobile { display: block; color: var(--mist-white); font-weight: 700; }
+            .post-header .post-author { display: none; } /* Hide desktop author when mobile */
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="traveloop-screens.html"><img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo" class="brand-logo" style="cursor: pointer;"></a>
+        </div>
+        <div class="nav-links">
+            <a href="traveloop-screens.html">Explore</a>
+            <a href="user_trips.html">My Trips</a>
+            <a href="community_tab.html" class="active">Community</a>
+            <a href="itinerary_view.html">Itinerary View</a>
+            <a href="packing_checklist.html">Packing checklist</a>
+        </div>
+        <div class="nav-profile">
+            <a href="userpanel.html"><img src="https://ui-avatars.com/api/?name=User&background=1A6EF5&color=fff" alt="Profile" class="avatar"></a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Search and Filters -->
+        <div class="toolbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search experiences, destinations, users...">
+            </div>
+            <div class="filters">
+                <button class="filter-btn">Group by <i class="fa-solid fa-caret-down"></i></button>
+                <button class="filter-btn">Filter <i class="fa-solid fa-caret-down"></i></button>
+                <button class="filter-btn">Sort by... <i class="fa-solid fa-caret-down"></i></button>
+            </div>
+        </div>
+
+        <div class="community-header">
+            <h1 class="community-title">Community Tab</h1>
+            <p class="community-subtitle">Discover real experiences, ask questions, and share your adventures with fellow travelers in the Traveloop network.</p>
+        </div>
+
+        <div class="post-list">
+            <!-- Post 1 -->
+            <div class="post-item">
+                <div class="post-avatar-wrapper">
+                    <img src="https://ui-avatars.com/api/?name=Emma+W&background=F5C842&color=071C3F" alt="Avatar" class="post-avatar">
+                </div>
+                <div class="post-content">
+                    <div class="post-header">
+                        <div class="post-author">Emma Watson <i class="fa-solid fa-circle-check author-badge"></i></div>
+                        <div class="post-time">2 hours ago</div>
+                    </div>
+                    <div class="post-trip-tag"><i class="fa-solid fa-location-dot"></i> Paris Exploration</div>
+                    <p class="post-body">Just completed the Eiffel Tower Summit tour! I highly recommend booking the early morning slot to avoid the massive crowds. The guide was incredibly knowledgeable. Does anyone have recommendations for a good bakery near the Louvre?</p>
+                    <div class="post-actions">
+                        <button class="action-btn liked"><i class="fa-solid fa-heart"></i> 24</button>
+                        <button class="action-btn"><i class="fa-regular fa-comment"></i> 5</button>
+                        <button class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="post-item">
+                <div class="post-avatar-wrapper">
+                    <img src="https://ui-avatars.com/api/?name=David+C&background=4FA3F7&color=fff" alt="Avatar" class="post-avatar">
+                </div>
+                <div class="post-content">
+                    <div class="post-header">
+                        <div class="post-author">David Chen</div>
+                        <div class="post-time">5 hours ago</div>
+                    </div>
+                    <div class="post-trip-tag"><i class="fa-solid fa-location-dot"></i> Tokyo Neon Nights</div>
+                    <p class="post-body">Shibuya crossing at night is just as insane as they say. We found this tiny ramen shop tucked away in a back alley that only seats 6 people. Best meal of the trip so far! Will add the location pin to my public itinerary later today.</p>
+                    <div class="post-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i> 112</button>
+                        <button class="action-btn"><i class="fa-regular fa-comment"></i> 18</button>
+                        <button class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="post-item">
+                <div class="post-avatar-wrapper">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+J&background=8BA7D4&color=fff" alt="Avatar" class="post-avatar">
+                </div>
+                <div class="post-content">
+                    <div class="post-header">
+                        <div class="post-author">Sarah Jenkins <i class="fa-solid fa-circle-check author-badge"></i></div>
+                        <div class="post-time">1 day ago</div>
+                    </div>
+                    <div class="post-trip-tag"><i class="fa-solid fa-location-dot"></i> Bali Retreat</div>
+                    <p class="post-body">If you are planning to visit the rice terraces in Ubud, definitely hire a local driver instead of trying to rent a scooter if you've never driven one before. The roads are tricky! Our driver was amazing and brought us to a hidden waterfall not on the tourist map.</p>
+                    <div class="post-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i> 45</button>
+                        <button class="action-btn"><i class="fa-regular fa-comment"></i> 3</button>
+                        <button class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Post 4 -->
+            <div class="post-item">
+                <div class="post-avatar-wrapper">
+                    <img src="https://ui-avatars.com/api/?name=Marcus+T&background=1A6EF5&color=fff" alt="Avatar" class="post-avatar">
+                </div>
+                <div class="post-content">
+                    <div class="post-header">
+                        <div class="post-author">Marcus Thompson</div>
+                        <div class="post-time">2 days ago</div>
+                    </div>
+                    <div class="post-trip-tag"><i class="fa-solid fa-location-dot"></i> Alpine Valley Paragliding</div>
+                    <p class="post-body">Just survived my first paragliding experience! The instructor from the Alpine Valley group made me feel completely safe. The view from 4,000 feet up looking down at the snow peaks was life-changing. 10/10 would do again.</p>
+                    <div class="post-actions">
+                        <button class="action-btn liked"><i class="fa-solid fa-heart"></i> 89</button>
+                        <button class="action-btn"><i class="fa-regular fa-comment"></i> 12</button>
+                        <button class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button to post -->
+        <button class="fab" title="Create Post">
+            <i class="fa-solid fa-pen-nib"></i>
+        </button>
+    </main>
+
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

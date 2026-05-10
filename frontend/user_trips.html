@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Trips - Traveloop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ocean: #05162e;
+            --ocean-deep: #020a17;
+            --azure: #1a6ef5;
+            --sky: #4fa3f7;
+            --mist: #e8f0fe;
+            --slate: #8ba7d4;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-hover: rgba(255, 255, 255, 0.06);
+            --journey-gold: #f5c842;
+            --font-heading: 'Playfair Display', serif;
+            --font-ui: 'DM Sans', sans-serif;
+        }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--ocean-deep);
+    color: var(--mist);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    background: radial-gradient(circle at top right, #0a1f44 0%, var(--ocean-deep) 100%);
+}
+
+/* Background Effects */
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+}
+
+.glow-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%);
+    top: -100px;
+    right: -200px;
+}
+
+.glow-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    opacity: 0.2;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: var(--mist-white);
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: twinkle infinite alternate;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 0.8; transform: scale(1.5); }
+}
+
+/* Navigation */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5%;
+    background: rgba(7, 28, 63, 0.6);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(139, 167, 212, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--mist-white);
+}
+
+.brand-logo {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4));
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: var(--slate-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--mist-white);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--azure-blue);
+    cursor: pointer;
+}
+
+/* Main Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 5%;
+    padding-bottom: 100px;
+}
+
+/* Toolbar (Search & Filters) */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(139, 167, 212, 0.2);
+    border-radius: 8px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.search-bar:focus-within {
+    border-color: var(--azure-blue);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.search-bar i {
+    color: var(--slate-muted);
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: var(--mist-white);
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-bar input::placeholder {
+    color: var(--slate-muted);
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-group {
+    position: relative;
+}
+
+.filter-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(5, 22, 46, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px 0;
+    margin-top: 10px;
+    min-width: 180px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    animation: dropdownIn 0.3s ease;
+}
+
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.filter-group:hover .filter-dropdown {
+    display: block;
+}
+
+.filter-dropdown a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--slate);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+}
+
+.filter-dropdown a:hover {
+    background: rgba(26, 110, 245, 0.15);
+    color: var(--mist);
+    padding-left: 24px;
+}
+
+.filter-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--slate);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: var(--glass-hover);
+    color: var(--mist);
+    border-color: var(--azure);
+}
+
+.trip-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* Trip Sections */
+.trip-section {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.section-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 24px;
+    background-color: var(--azure-blue);
+    border-radius: 2px;
+}
+
+/* Trip Cards */
+.trip-card {
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.trip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.ongoing-card {
+    background: linear-gradient(135deg, rgba(26, 110, 245, 0.8), rgba(7, 28, 63, 0.9));
+    border: 1px solid rgba(79, 163, 247, 0.3);
+}
+
+.upcoming-card {
+    background: linear-gradient(135deg, rgba(138, 28, 74, 0.8), rgba(7, 28, 63, 0.9));
+    border: 1px solid rgba(138, 28, 74, 0.3);
+}
+
+.completed-card-1 {
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.7), rgba(7, 28, 63, 0.9));
+    border: 1px solid rgba(34, 139, 34, 0.3);
+}
+
+.completed-card-2 {
+    background: linear-gradient(135deg, rgba(160, 82, 45, 0.7), rgba(7, 28, 63, 0.9));
+    border: 1px solid rgba(160, 82, 45, 0.3);
+}
+
+.card-content {
+    padding: 30px;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
+    height: 100%;
+}
+
+.trip-header {
+    margin-bottom: 15px;
+}
+
+.country {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--slate-muted);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.city {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--mist-white);
+}
+
+.overview {
+    color: var(--mist-white);
+    opacity: 0.9;
+    max-width: 700px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.trip-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.trip-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--slate-muted);
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+button {
+    font-family: var(--font-ui);
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--azure-blue);
+    color: var(--mist-white);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1557c0;
+}
+
+.btn-gold {
+    background-color: var(--journey-gold);
+    color: var(--ocean-deep);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-gold:hover {
+    transform: scale(1.05);
+}
+
+.btn-ghost {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--slate-muted);
+    color: var(--mist-white);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--mist-white);
+}
+
+/* FAB */
+.fab {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background-color: var(--journey-gold);
+    color: var(--ocean-deep);
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(245, 200, 66, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 100;
+}
+
+.fab:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(245, 200, 66, 0.4);
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .trip-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="traveloop-screens.html"><img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo" class="brand-logo" style="cursor: pointer;"></a>
+        </div>
+        <div class="nav-links">
+            <a href="traveloop-screens.html">Explore</a>
+            <a href="user_trips.html" class="active">My Trips</a>
+            <a href="community_tab.html">Community</a>
+            <a href="itinerary_view.html">Itinerary View</a>
+            <a href="packing_checklist.html">Packing checklist</a>
+        </div>
+        <div class="nav-profile">
+            <a href="userpanel.html"><img src="https://ui-avatars.com/api/?name=User&background=1A6EF5&color=fff" alt="Profile" class="avatar"></a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Search and Filters -->
+        <div class="toolbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search trips, cities, countries...">
+            </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <button class="filter-btn">Group by <i class="fa-solid fa-caret-down"></i></button>
+                    <div class="filter-dropdown">
+                        <a href="#">Country</a>
+                        <a href="#">Month</a>
+                        <a href="#">Status</a>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn">Filter <i class="fa-solid fa-caret-down"></i></button>
+                    <div class="filter-dropdown">
+                        <a href="#">Show All</a>
+                        <a href="#">Ongoing Only</a>
+                        <a href="#">Upcoming Only</a>
+                        <a href="#">Completed Only</a>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn">Sort by <i class="fa-solid fa-caret-down"></i></button>
+                    <div class="filter-dropdown">
+                        <a href="#">Newest First</a>
+                        <a href="#">Oldest First</a>
+                        <a href="#">Alphabetical</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ongoing Trips -->
+        <section class="trip-section">
+            <h2 class="section-title">Ongoing</h2>
+            <div class="trip-grid-container">
+                <div class="trip-card ongoing-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">FRANCE</span>
+                            <h3 class="city">Paris Exploration</h3>
+                        </div>
+                        <p class="overview">Enjoying the romantic streets, visiting the Eiffel Tower, and exploring the Louvre. A fantastic European adventure!</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Oct 12 - Oct 20</span>
+                            <button class="btn-primary" onclick="window.location.href='itinerary_view.html'">View Itinerary</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="trip-card ongoing-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">ITALY</span>
+                            <h3 class="city">Rome Heritage</h3>
+                        </div>
+                        <p class="overview">Immersing in ancient history at the Colosseum and savoring authentic Italian cuisine. Living the dream!</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Oct 15 - Oct 25</span>
+                            <button class="btn-primary" onclick="window.location.href='itinerary_view.html'">View Itinerary</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Up-coming Trips -->
+        <section class="trip-section">
+            <h2 class="section-title">Up-coming</h2>
+            <div class="trip-grid-container">
+                <div class="trip-card upcoming-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">JAPAN</span>
+                            <h3 class="city">Tokyo Neon Nights</h3>
+                        </div>
+                        <p class="overview">Ready to dive into the bustling streets of Shibuya, experience traditional temples, and taste authentic sushi.</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Nov 05 - Nov 15</span>
+                            <button class="btn-gold"><i class="fa-solid fa-plus"></i> Add Details</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="trip-card upcoming-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">SWITZERLAND</span>
+                            <h3 class="city">Alpine Wonders</h3>
+                        </div>
+                        <p class="overview">Hiking through the Swiss Alps and enjoying the serene beauty of the lakes. Nature at its finest.</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Dec 01 - Dec 10</span>
+                            <button class="btn-gold"><i class="fa-solid fa-plus"></i> Add Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completed Trips -->
+        <section class="trip-section">
+            <h2 class="section-title">Completed</h2>
+            <div class="trip-grid-container">
+                <div class="trip-card completed-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">INDONESIA</span>
+                            <h3 class="city">Bali Retreat</h3>
+                        </div>
+                        <p class="overview">A peaceful retreat exploring lush rice terraces, ancient temples, and beautiful pristine beaches.</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sep 01 - Sep 10</span>
+                            <button class="btn-ghost">View Memories</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trip-card completed-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">UAE</span>
+                            <h3 class="city">Dubai Luxury</h3>
+                        </div>
+                        <p class="overview">Experienced the heights of the Burj Khalifa, desert safaris, and immense luxury shopping centers.</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Jan 15 - Jan 22</span>
+                            <button class="btn-ghost">View Memories</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trip-card completed-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">GREECE</span>
+                            <h3 class="city">Santorini Sunset</h3>
+                        </div>
+                        <p class="overview">Relaxing in the white-washed buildings of Oia and watching the most beautiful sunset in the world.</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Mar 10 - Mar 18</span>
+                            <button class="btn-ghost">View Memories</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trip-card completed-card">
+                    <div class="card-content">
+                        <div class="trip-header">
+                            <span class="country">BRAZIL</span>
+                            <h3 class="city">Rio Carnival</h3>
+                        </div>
+                        <p class="overview">Dancing through the streets of Rio during the world's biggest carnival. Pure energy and color!</p>
+                        <div class="trip-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Feb 12 - Feb 19</span>
+                            <button class="btn-ghost">View Memories</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 50; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end;">
+            <button class="fab" style="position: static;" onclick="window.location.href='traveloop-screens.html'">
+                <i class="fa-solid fa-plus"></i> Plan a trip
+            </button>
+            <button class="fab" onclick="window.location.href='notes.html'" style="position: static; background: var(--azure-blue); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <i class="fa-solid fa-note-sticky"></i> Notes
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+    <script src="auth.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traveloop - User Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* ==================== DESIGN SYSTEM VARIABLES ==================== */
+
+:root {
+  --ocean-deep: #071C3F;
+  --azure-blue: #1A6EF5;
+  --sky-blue: #4FA3F7;
+  --journey-gold: #F5C842;
+  --mist-white: #E8F0FE;
+  --slate-muted: #8BA7D4;
+  --card-bg: rgba(255, 255, 255, 0.03);
+
+  --serif: 'Playfair Display', serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+/* ==================== RESET & BASE STYLES ==================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-color: var(--ocean-deep);
+  color: var(--mist-white);
+  font-family: var(--sans);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ==================== BACKGROUND EFFECTS ==================== */
+
+.background-effects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+}
+
+.glow-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%);
+  top: -100px;
+  right: -200px;
+  animation: float 15s ease-in-out infinite;
+}
+
+.glow-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%);
+  bottom: -100px;
+  left: -100px;
+  opacity: 0.2;
+  animation: float 20s ease-in-out infinite reverse;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: var(--mist-white);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: twinkle infinite alternate;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 4px 1px white; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(30px); }
+}
+
+/* ==================== CONTAINER ==================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== HEADER & LOGO ==================== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4));
+  transition: all 0.3s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.logo-text {
+  display: none;
+}
+
+.personality-pillars {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--slate-muted);
+  flex-wrap: wrap;
+}
+
+.pillar {
+  font-weight: 600;
+  color: var(--journey-gold);
+}
+
+.pillar-dot {
+  color: var(--journey-gold);
+  font-weight: bold;
+}
+
+/* ==================== PROFILE CARD ==================== */
+
+.profile-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(139, 167, 212, 0.15);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.profile-content {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+/* ==================== AVATAR ==================== */
+
+.avatar-section {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid var(--sky-blue);
+  background: radial-gradient(circle at 30% 30%, var(--sky-blue), var(--azure-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(79, 163, 247, 0.4),
+              inset 0 0 20px rgba(79, 163, 247, 0.2);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(79, 163, 247, 0.4), inset 0 0 20px rgba(79, 163, 247, 0.2); }
+  50% { box-shadow: 0 0 50px rgba(79, 163, 247, 0.6), inset 0 0 30px rgba(79, 163, 247, 0.3); }
+}
+
+.avatar-emoji {
+  font-size: 4rem;
+}
+
+/* ==================== PROFILE DETAILS ==================== */
+
+.profile-details {
+  flex: 1;
+  min-width: 300px;
+}
+
+.view-mode,
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-header {
+  margin-bottom: 0.5rem;
+}
+
+.user-name {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mist-white);
+  margin-bottom: 0.5rem;
+}
+
+.user-email {
+  color: var(--sky-blue);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.user-bio {
+  color: var(--mist-white);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+/* ==================== INTERESTS ==================== */
+
+.interests-container {
+  margin: 1.5rem 0;
+}
+
+.interests-label {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--journey-gold);
+  margin-bottom: 1rem;
+}
+
+.interests-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.interest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--azure-blue), var(--sky-blue));
+  color: var(--mist-white);
+  font-family: var(--sans);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(79, 163, 247, 0.3);
+  transition: all 0.3s ease;
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.interest-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 110, 245, 0.3);
+}
+
+.interest-tag button {
+  background: none;
+  border: none;
+  color: var(--journey-gold);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  margin-left: 0.3rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.interest-tag button:hover {
+  transform: rotate(90deg) scale(1.2);
+}
+
+/* ==================== ADD INTEREST FORM ==================== */
+
+.add-interest-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.interest-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(79, 163, 247, 0.3);
+  background: rgba(79, 163, 247, 0.08);
+  color: var(--mist-white);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.interest-input::placeholder {
+  color: var(--slate-muted);
+}
+
+.interest-input:focus {
+  border-color: var(--journey-gold);
+  background: rgba(79, 163, 247, 0.12);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.1);
+}
+
+/* ==================== FORM ELEMENTS ==================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-group label {
+  color: var(--journey-gold);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-input,
+.form-textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(79, 163, 247, 0.3);
+  background: rgba(79, 163, 247, 0.08);
+  color: var(--mist-white);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--slate-muted);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--journey-gold);
+  background: rgba(79, 163, 247, 0.12);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-input:disabled {
+  background: rgba(139, 167, 212, 0.05);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ==================== BUTTONS ==================== */
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-large {
+  padding: 0.85rem 1.75rem;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--azure-blue), var(--sky-blue));
+  color: var(--mist-white);
+  border: 1px solid rgba(79, 163, 247, 0.5);
+  box-shadow: 0 4px 15px rgba(26, 110, 245, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(26, 110, 245, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--sky-blue);
+  border: 1px solid var(--sky-blue);
+}
+
+.btn-ghost:hover {
+  background: rgba(79, 163, 247, 0.1);
+  box-shadow: 0 4px 15px rgba(79, 163, 247, 0.2);
+}
+
+.btn-gold {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--mist-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-dark {
+  background: var(--ocean-deep);
+  color: var(--mist-white);
+  border: 1px solid rgba(79, 163, 247, 0.3);
+}
+
+.btn-dark:hover {
+  background: rgba(79, 163, 247, 0.1);
+  border-color: var(--azure-blue);
+}
+
+/* ==================== TRIPS SECTION ==================== */
+
+.trips-section {
+  margin-bottom: 4rem;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mist-white);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 28px;
+  background-color: var(--azure-blue);
+  margin-right: 12px;
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  color: var(--slate-muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* ==================== TRIP CARD ==================== */
+
+.trip-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(139, 167, 212, 0.15);
+  border-radius: 1rem;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.trip-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245, 200, 66, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.trip-card:hover::before {
+  left: 100%;
+}
+
+.trip-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.trip-image {
+  display: none;
+}
+
+.trip-title {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--mist-white);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.trip-description {
+  color: var(--slate-muted);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.trip-date {
+  color: var(--journey-gold);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trip-card .btn {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+/* ==================== CTA SECTION ==================== */
+
+.cta-section {
+  background: var(--card-bg);
+  border: 1px solid rgba(139, 167, 212, 0.15);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-top: 4rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1s ease 0.3s both;
+  backdrop-filter: blur(10px);
+}
+
+.cta-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mist-white);
+  margin-bottom: 0.75rem;
+}
+
+.cta-subtitle {
+  color: var(--slate-muted);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-cta {
+  align-self: center;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .avatar-section {
+    width: 100%;
+  }
+
+  .profile-details {
+    width: 100%;
+  }
+
+  .trips-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .logo-image {
+    width: 65px;
+    height: 65px;
+  }
+
+  .logo-text {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .logo-section {
+    gap: 0.75rem;
+  }
+
+  .logo-image {
+    width: 55px;
+    height: 55px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .personality-pillars {
+    font-size: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-emoji {
+    font-size: 3rem;
+  }
+
+  .user-name {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .trips-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .cta-section {
+    padding: 2rem 1rem;
+  }
+
+  .cta-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.75rem;
+  }
+
+  .logo-section {
+    gap: 0.5rem;
+  }
+
+  .logo-image {
+    width: 45px;
+    height: 45px;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
+
+  .personality-pillars {
+    font-size: 0.7rem;
+    gap: 0.4rem;
+  }
+
+  .user-name {
+    font-size: 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .interest-tag {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .add-interest-form {
+    flex-direction: column;
+  }
+
+  .interest-input {
+    min-width: 100%;
+  }
+}
+
+/* ==================== SCROLLBAR STYLING ==================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 110, 245, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--azure-blue), var(--sky-blue));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--sky-blue), var(--journey-gold));
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="background-effects">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Header with Logo -->
+    <div class="header">
+      <div class="logo-section">
+        <a href="traveloop-screens.html"><img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo" class="logo-image" style="cursor: pointer;" /></a>
+      </div>
+      <div class="personality-pillars">
+        <span class="pillar">Intelligent</span>
+        <span class="pillar-dot">•</span>
+        <span class="pillar">Adventurous</span>
+        <span class="pillar-dot">•</span>
+        <span class="pillar">Personal</span>
+      </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-card">
+      <div class="profile-content">
+        <!-- Avatar -->
+        <div class="avatar-section">
+          <div class="avatar">
+            <span class="avatar-emoji">👤</span>
+          </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="profile-details">
+          <!-- View Mode -->
+          <div id="viewMode" class="view-mode">
+            <div class="user-header">
+              <h2 class="user-name" id="displayName">Alex Johnson</h2>
+              <p class="user-email" id="displayEmail">alex@example.com</p>
+            </div>
+
+            <p class="user-bio" id="displayBio">Adventure seeker and travel enthusiast exploring the world one journey at a time.</p>
+
+            <!-- Interests Display -->
+            <div class="interests-container">
+              <h3 class="interests-label">Interests & Passions</h3>
+              <div id="interestsList" class="interests-list">
+                <!-- Interests will be added here by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Add Interest Form -->
+            <div class="add-interest-form">
+              <input
+                type="text"
+                id="interestInput"
+                placeholder="Add an interest..."
+                class="interest-input"
+              />
+              <button class="btn btn-gold" onclick="addInterest()">Add</button>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <button class="btn btn-gold btn-large" onclick="enterEditMode()">Edit Profile</button>
+              <button class="btn btn-ghost btn-large" style="border-color: #f87171; color: #f87171;" onclick="logoutUser()">Log Out</button>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div id="editMode" class="edit-mode" style="display: none;">
+            <div class="form-group">
+              <label for="nameInput">Full Name</label>
+              <input type="text" id="nameInput" placeholder="Your name" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label for="emailInput">Email Address</label>
+              <input type="email" id="emailInput" placeholder="Your email" class="form-input" disabled />
+            </div>
+
+            <div class="form-group">
+              <label for="bioInput">Your Story</label>
+              <textarea id="bioInput" placeholder="Tell us about yourself and your travel dreams..." class="form-textarea"></textarea>
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary btn-large" onclick="saveProfile()">Save Changes</button>
+              <button class="btn btn-ghost btn-large" onclick="cancelEdit()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preplanned Trips Section -->
+    <div class="trips-section">
+      <div class="section-header">
+        <h2 class="section-title">✨ Upcoming Adventures</h2>
+        <p class="section-subtitle">Your journeys waiting to unfold</p>
+      </div>
+      <div class="trips-grid" id="preplannedTripsGrid">
+        <!-- Trip cards will be added here by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Previous Trips Section -->
+    <div class="trips-section">
+      <div class="section-header">
+        <h2 class="section-title">🌟 Memories Made</h2>
+        <p class="section-subtitle">Journeys already explored</p>
+      </div>
+      <div class="trips-grid" id="previousTripsGrid">
+        <!-- Trip cards will be added here by JavaScript -->
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <h2 class="cta-title">Ready for Your Next Adventure?</h2>
+      <p class="cta-subtitle">Start planning your dream trip today</p>
+      <button class="btn btn-primary btn-large btn-cta" onclick="window.location.href='traveloop-screens.html'">Plan a Trip</button>
+      <button class="btn btn-primary btn-large btn-cta" onclick="window.location.href='notes.html'" style="margin-top: 1rem; background: linear-gradient(135deg, var(--ocean), var(--azure)); border-color: var(--azure);">Notes</button>
+    </div>
+  </div>
+
+  <script>
+// ==================== MOCK DATA ====================
+
+// ==================== DESIGN SYSTEM CONSTANTS ====================
+
+const COLORS = {
+  oceanDeep: '#071C3F',
+  azureBlue: '#1A6EF5',
+  skyBlue: '#4FA3F7',
+  journeyGold: '#F5C842',
+  mistWhite: '#E8F0FE',
+  slateMuted: '#8BA7D4',
+};
+
+const PERSONALITY_PILLARS = [
+  'Intelligent',
+  'Collaborative',
+  'Adventurous',
+  'Personal',
+  'Trustworthy',
+  'Memorable',
+];
+
+// ==================== MOCK DATA ====================
+
+const mockUserData = {
+  name: 'Alex Johnson',
+  email: 'alex@example.com',
+  bio: 'Adventure seeker and travel enthusiast exploring the world one journey at a time. Always ready for the next great journey.',
+  avatar_url: null,
+};
+
+const mockInterests = ['Adventure', 'Culture', 'Food', 'Nature', 'Photography'];
+
+const mockPreplannedTrips = [
+  {
+    id: '1',
+    name: 'European Summer',
+    description: 'Multi-city tour across iconic European destinations',
+    start_date: '2026-06-15',
+    end_date: '2026-08-15',
+  },
+  {
+    id: '2',
+    name: 'Asia Explorer',
+    description: 'Southeast Asia adventure through vibrant cultures',
+    start_date: '2026-07-01',
+    end_date: '2026-08-30',
+  },
+  {
+    id: '3',
+    name: 'Beach Escape',
+    description: 'Tropical island getaway for relaxation and exploration',
+    start_date: '2026-09-15',
+    end_date: '2026-09-30',
+  },
+];
+
+const mockPreviousTrips = [
+  {
+    id: '4',
+    name: 'Iceland Adventure',
+    description: 'Epic Ring Road exploration through Nordic landscapes',
+    start_date: '2025-08-01',
+    end_date: '2025-08-15',
+  },
+  {
+    id: '5',
+    name: 'Japan Journey',
+    description: 'Tokyo to Kyoto cultural and culinary experience',
+    start_date: '2025-10-01',
+    end_date: '2025-10-20',
+  },
+  {
+    id: '6',
+    name: 'Mountain Trek',
+    description: 'Colorado hiking adventure through scenic peaks',
+    start_date: '2025-09-01',
+    end_date: '2025-09-10',
+  },
+];
+
+// ==================== STATE MANAGEMENT ====================
+
+let userData = { ...mockUserData };
+// Sync with DB
+const dbUser = JSON.parse(localStorage.getItem('userInfo'));
+if (dbUser) {
+  userData.name = dbUser.name;
+  userData.email = dbUser.email;
+  if (dbUser.bio) userData.bio = dbUser.bio;
+}
+
+let interests = [...mockInterests];
+let editedData = { ...userData };
+
+// ==================== INITIALIZATION ====================
+
+document.addEventListener('DOMContentLoaded', function () {
+  initializeParticles();
+  renderProfile();
+  renderInterests();
+  renderTrips();
+  setupEventListeners();
+});
+
+// ==================== PARTICLE SYSTEM ====================
+
+function initializeParticles() {
+  const particlesContainer = document.getElementById('particles');
+  if (particlesContainer) {
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.top = Math.random() * 100 + 'vh';
+      particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      particle.style.animationDelay = Math.random() * 2 + 's';
+      particlesContainer.appendChild(particle);
+    }
+  }
+}
+
+// ==================== PROFILE FUNCTIONS ====================
+
+function renderProfile() {
+  document.getElementById('displayName').textContent = userData.name;
+  document.getElementById('displayEmail').textContent = userData.email;
+  document.getElementById('displayBio').textContent = userData.bio;
+}
+
+function enterEditMode() {
+  editedData = { ...userData };
+  document.getElementById('nameInput').value = userData.name;
+  document.getElementById('emailInput').value = userData.email;
+  document.getElementById('bioInput').value = userData.bio;
+
+  document.getElementById('viewMode').style.display = 'none';
+  document.getElementById('editMode').style.display = 'flex';
+}
+
+function saveProfile() {
+  userData.name = document.getElementById('nameInput').value.trim();
+  userData.bio = document.getElementById('bioInput').value.trim();
+
+  if (!userData.name || !userData.bio) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  // Connect and update DB
+  const dbUser = JSON.parse(localStorage.getItem('userInfo')) || {};
+  dbUser.name = userData.name;
+  dbUser.bio = userData.bio;
+  localStorage.setItem('userInfo', JSON.stringify(dbUser));
+
+  renderProfile();
+  
+  // Sync global UI if auth.js is loaded
+  if (typeof updateProfileUI === 'function') {
+      updateProfileUI();
+  }
+
+  document.getElementById('viewMode').style.display = 'flex';
+  document.getElementById('editMode').style.display = 'none';
+}
+
+function cancelEdit() {
+  document.getElementById('viewMode').style.display = 'flex';
+  document.getElementById('editMode').style.display = 'none';
+}
+
+// ==================== INTERESTS FUNCTIONS ====================
+
+function renderInterests() {
+  const interestsList = document.getElementById('interestsList');
+  interestsList.innerHTML = '';
+
+  interests.forEach((interest) => {
+    const tag = document.createElement('div');
+    tag.className = 'interest-tag';
+    tag.innerHTML = `
+      ${interest}
+      <button onclick="removeInterest('${interest}')" title="Remove ${interest}">✕</button>
+    `;
+    interestsList.appendChild(tag);
+  });
+}
+
+function addInterest() {
+  const input = document.getElementById('interestInput');
+  const newInterest = input.value.trim();
+
+  if (!newInterest) {
+    alert('Please enter an interest');
+    return;
+  }
+
+  if (interests.includes(newInterest)) {
+    alert('This interest already exists');
+    return;
+  }
+
+  if (interests.length >= 10) {
+    alert('Maximum 10 interests allowed');
+    return;
+  }
+
+  interests.push(newInterest);
+  input.value = '';
+  renderInterests();
+}
+
+function removeInterest(interest) {
+  interests = interests.filter((i) => i !== interest);
+  renderInterests();
+}
+
+// ==================== TRIPS FUNCTIONS ====================
+
+function renderTrips() {
+  renderTripGrid('preplannedTripsGrid', mockPreplannedTrips);
+  renderTripGrid('previousTripsGrid', mockPreviousTrips);
+}
+
+function renderTripGrid(gridId, trips) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+
+  trips.forEach((trip, index) => {
+    const card = createTripCard(trip);
+    card.style.animationDelay = (index * 0.1) + 's';
+    grid.appendChild(card);
+  });
+}
+
+function createTripCard(trip) {
+  const card = document.createElement('div');
+  card.className = 'trip-card';
+
+  const startDate = new Date(trip.start_date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  const endDate = new Date(trip.end_date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  card.innerHTML = `
+    <div>
+      <div class="trip-image"></div>
+      <h3 class="trip-title">${trip.name}</h3>
+      <p class="trip-description">${trip.description}</p>
+      <p class="trip-date">📅 ${startDate} → ${endDate}</p>
+    </div>
+    <button class="btn btn-gold" onclick="viewTrip('${trip.id}')">View Details</button>
+  `;
+
+  return card;
+}
+
+function viewTrip(tripId) {
+  const trip = [...mockPreplannedTrips, ...mockPreviousTrips].find(t => t.id === tripId);
+  if (trip) {
+    console.log('Viewing trip:', trip);
+    alert(`Trip: ${trip.name}\n\n${trip.description}\n\nDates: ${trip.start_date} to ${trip.end_date}`);
+  }
+}
+
+// ==================== EVENT LISTENERS ====================
+
+function setupEventListeners() {
+  // Add interest with Enter key
+  const interestInput = document.getElementById('interestInput');
+  if (interestInput) {
+    interestInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addInterest();
+      }
+    });
+  }
+
+  // CTA button
+  const ctaButton = document.querySelector('.btn-cta');
+  if (ctaButton) {
+    ctaButton.addEventListener('click', function () {
+      alert('Redirecting to Trip Planning...');
+    });
+  }
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
+function logDesignSystem() {
+  console.log('🎨 Traveloop Design System Loaded');
+  console.log('Colors:', COLORS);
+  console.log('Personality Pillars:', PERSONALITY_PILLARS);
+}
+
+// Call on load
+logDesignSystem();
+</script>
+    <script src="auth.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

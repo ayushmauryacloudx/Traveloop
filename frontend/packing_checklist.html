@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packing Checklist - Traveloop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep: #071C3F;
+            --azure-blue: #1A6EF5;
+            --sky-blue: #4FA3F7;
+            --journey-gold: #F5C842;
+            --mist-white: #E8F0FE;
+            --slate-muted: #8BA7D4;
+            --font-heading: 'Playfair Display', serif;
+            --font-ui: 'DM Sans', sans-serif;
+            
+            /* Theme Variables - Default Dark */
+            --bg-color: var(--ocean-deep);
+            --text-color: var(--mist-white);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(139, 167, 212, 0.2);
+            --nav-bg: rgba(7, 28, 63, 0.6);
+            --input-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode {
+            --bg-color: #F0F4F8;
+            --text-color: #071C3F;
+            --card-bg: #FFFFFF;
+            --card-border: rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #E1E8F0;
+            --slate-muted: #546E7A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-ui); min-height: 100vh; position: relative; overflow-x: hidden; transition: all 0.4s ease; }
+        
+        /* Background Effects */
+        .background-effects { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; pointer-events: none; }
+        .glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; transition: opacity 0.5s; }
+        body.light-mode .glow { opacity: 0.1; }
+        .glow-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%); top: -100px; right: -200px; }
+        .glow-2 { width: 400px; height: 400px; background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%); bottom: -100px; left: -100px; opacity: 0.2; }
+        .particle { position: absolute; width: 2px; height: 2px; background-color: var(--text-color); border-radius: 50%; opacity: 0.5; animation: twinkle infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.5); } }
+
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 100; transition: background 0.4s; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color); }
+        .brand-logo { height: 80px; width: 80px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4)); }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--slate-muted); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-color); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--azure-blue); cursor: pointer; }
+
+        /* Container & Toolbar */
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 5%; padding-bottom: 100px; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
+        .search-bar { flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(139, 167, 212, 0.2); border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: border-color 0.3s ease; }
+        .search-bar:focus-within { border-color: var(--azure-blue); background: rgba(255, 255, 255, 0.05); }
+        .search-bar i { color: var(--slate-muted); }
+        .search-bar input { background: transparent; border: none; color: var(--mist-white); width: 100%; font-family: var(--font-ui); font-size: 1rem; outline: none; }
+        .search-bar input::placeholder { color: var(--slate-muted); }
+        .filters { display: flex; gap: 15px; }
+        .filter-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(139, 167, 212, 0.2); color: var(--slate-muted); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: var(--font-ui); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+        .filter-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--mist-white); }
+
+        /* Checklist Specific Styles */
+        .checklist-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .checklist-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .checklist-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--mist-white);
+        }
+
+        .trip-selector {
+            background: rgba(26, 110, 245, 0.1);
+            border: 1px solid var(--azure-blue);
+            color: var(--mist-white);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E8F0FE%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+            padding-right: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .trip-selector:hover {
+            background-color: rgba(26, 110, 245, 0.2);
+        }
+
+        .trip-selector option {
+            background-color: var(--ocean-deep);
+            color: var(--mist-white);
+        }
+
+        .progress-section {
+            margin-bottom: 40px;
+        }
+
+        .progress-text {
+            color: var(--slate-muted);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 167, 212, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--azure-blue), var(--sky-blue));
+            width: 41.66%; /* 5/12 */
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(79, 163, 247, 0.5);
+        }
+
+        .category-group {
+            margin-bottom: 35px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(139, 167, 212, 0.15);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--mist-white);
+            letter-spacing: 0.5px;
+        }
+
+        .category-fraction {
+            color: var(--slate-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Custom Checkbox */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--slate-muted);
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .custom-checkbox i {
+            color: transparent;
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+        }
+
+        .checkbox-item input:checked + .custom-checkbox {
+            background-color: var(--azure-blue);
+            border-color: var(--azure-blue);
+            box-shadow: 0 0 10px rgba(26, 110, 245, 0.4);
+        }
+
+        .checkbox-item input:checked + .custom-checkbox i {
+            color: white;
+        }
+
+        .item-label {
+            color: var(--mist-white);
+            font-size: 1.05rem;
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+        }
+
+        .checkbox-item input:checked ~ .item-label {
+            color: var(--slate-muted);
+            text-decoration: line-through;
+        }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(139, 167, 212, 0.1);
+            padding-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--azure-blue);
+            color: var(--sky-blue);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: rgba(26, 110, 245, 0.1);
+            color: var(--mist-white);
+        }
+
+        .btn-primary {
+            background: var(--azure-blue);
+            border: 1px solid var(--azure-blue);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #1557c0;
+            border-color: #1557c0;
+            box-shadow: 0 5px 15px rgba(26, 110, 245, 0.3);
+        }
+
+        .btn-add {
+            flex: 2;
+            justify-content: center;
+        }
+
+        .btn-action {
+            flex: 1;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .checklist-header-top { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .bottom-actions { flex-direction: column; }
+            .btn-action, .btn-add { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="traveloop-screens.html"><img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo" class="brand-logo" style="cursor: pointer;"></a>
+        </div>
+        <div class="nav-links">
+            <a href="traveloop-screens.html">Explore</a>
+            <a href="user_trips.html">My Trips</a>
+            <a href="community_tab.html">Community</a>
+            <a href="itinerary_view.html">Itinerary View</a>
+            <a href="packing_checklist.html" class="active">Packing checklist</a>
+            <a href="expense_splitter.html">Expense Splitter</a>
+        </div>
+        <div class="nav-profile" style="display: flex; align-items: center; gap: 20px;">
+            <button id="theme-toggle" style="background: none; border: none; color: var(--journey-gold); cursor: pointer; font-size: 1.2rem;">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <a href="userpanel.html"><img src="https://ui-avatars.com/api/?name=User&background=1A6EF5&color=fff" alt="Profile" class="avatar"></a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Search and Filters -->
+        <div class="toolbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search checklist items...">
+            </div>
+            <div class="filters">
+                <button id="ai-suggest-btn" class="filter-btn" style="background: rgba(245, 200, 66, 0.1); border-color: var(--journey-gold); color: var(--journey-gold); font-weight: 700;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Suggest
+                </button>
+            </div>
+        </div>
+
+        <div class="checklist-wrapper">
+            
+            <div class="checklist-header-top">
+                <h1 class="checklist-title">Packing Checklist</h1>
+                <select id="trip-select" class="trip-selector">
+                    <option value="paris">Trip: Paris & Rome Adventure</option>
+                    <option value="bali">Trip: Bali Retreat</option>
+                    <option value="tokyo">Trip: Tokyo Neon Nights</option>
+                </select>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-text">
+                    <span>Progress: 0/0 items packed</span>
+                    <span>0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div id="checklist-content">
+                <!-- Categories and items will be loaded from JS -->
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="bottom-actions">
+                <button class="btn-outline btn-add">
+                    <i class="fa-solid fa-plus"></i> Add item
+                </button>
+                <button class="btn-outline btn-reset">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+                <button class="btn-primary btn-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Checklist
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+        </div>
+    </main>
+
+    <script>
+        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+        
+        let currentTrip = 'paris';
+        let tripData = JSON.parse(localStorage.getItem('packingData')) || {
+            paris: [
+                { category: 'Documents', items: [{ name: 'Passport', packed: true }, { name: 'Tickets', packed: false }] },
+                { category: 'Clothing', items: [{ name: 'Jacket', packed: true }] }
+            ],
+            bali: [{ category: 'Essentials', items: [{ name: 'Sunscreen', packed: false }] }],
+            tokyo: [{ category: 'Electronics', items: [{ name: 'Adapter', packed: true }] }]
+        };
+
+        const content = document.getElementById('checklist-content');
+        const progressText = document.querySelector('.progress-text span:first-child');
+        const progressPercent = document.querySelector('.progress-text span:last-child');
+        const progressBar = document.querySelector('.progress-bar-fill');
+        const tripSelect = document.getElementById('trip-select');
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDarkMode = true;
+        themeBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                document.body.style.backgroundColor = '#071C3F';
+                document.body.style.color = '#E8F0FE';
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                document.body.style.backgroundColor = '#f0f4f8';
+                document.body.style.color = '#071C3F';
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
+
+        function render() {
+            const data = tripData[currentTrip] || [];
+            content.innerHTML = '';
+            let total = 0, checked = 0;
+
+            data.forEach((cat, cIdx) => {
+                const group = document.createElement('div');
+                group.className = 'category-group';
+                
+                let cChecked = cat.items.filter(i => i.packed).length;
+                total += cat.items.length;
+                checked += cChecked;
+
+                group.innerHTML = `
+                    <div class="category-header">
+                        <h2 class="category-title">${cat.category}</h2>
+                        <span class="category-fraction">${cChecked}/${cat.items.length}</span>
+                    </div>
+                    <div class="items-list">
+                        ${cat.items.map((item, iIdx) => `
+                            <label class="checkbox-item">
+                                <input type="checkbox" ${item.packed ? 'checked' : ''} onchange="toggleItem(${cIdx}, ${iIdx})">
+                                <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                                <span class="item-label">${item.name}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                content.appendChild(group);
+            });
+
+            const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+            progressText.innerText = `Progress: ${checked}/${total} items packed`;
+            progressPercent.innerText = `${percent}%`;
+            progressBar.style.width = `${percent}%`;
+        }
+
+        function toggleItem(cIdx, iIdx) {
+            tripData[currentTrip][cIdx].items[iIdx].packed = !tripData[currentTrip][cIdx].items[iIdx].packed;
+            save();
+            render();
+        }
+
+        function save() {
+            localStorage.setItem('packingData', JSON.stringify(tripData));
+        }
+
+        tripSelect.addEventListener('change', (e) => {
+            currentTrip = e.target.value;
+            render();
+        });
+
+        document.querySelector('.btn-reset').addEventListener('click', () => {
+            tripData[currentTrip].forEach(c => c.items.forEach(i => i.packed = false));
+            save();
+            render();
+        });
+
+        document.querySelector('.btn-save').addEventListener('click', () => {
+            save();
+            alert('Checklist saved locally!');
+        });
+
+        document.querySelector('.btn-add').addEventListener('click', () => {
+            const name = prompt("Item name:");
+            if (!name) return;
+            const catName = prompt("Category (e.g. Clothing, Electronics):", "General");
+            
+            let cat = tripData[currentTrip].find(c => c.category === catName);
+            if (!cat) {
+                cat = { category: catName, items: [] };
+                tripData[currentTrip].push(cat);
+            }
+            cat.items.push({ name, packed: false });
+            save();
+            render();
+        });
+
+        // AI Suggestion
+        document.getElementById('ai-suggest-btn').addEventListener('click', async () => {
+            const dest = tripSelect.options[tripSelect.selectedIndex].text;
+            const btn = document.getElementById('ai-suggest-btn');
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+
+            try {
+                if (GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+                    console.log("Running in Demo Mode...");
+                    await new Promise(r => setTimeout(r, 1200));
+                    const mockItems = ["Universal Power Adapter", "First Aid Kit", "Travel Umbrella", "Portable Power Bank", "Reusable Water Bottle"];
+                    
+                    let aiCat = tripData[currentTrip].find(c => c.category === 'AI Suggestions');
+                    if (!aiCat) {
+                        aiCat = { category: 'AI Suggestions', items: [] };
+                        tripData[currentTrip].push(aiCat);
+                    }
+                    mockItems.forEach(it => aiCat.items.push({ name: it, packed: false }));
+                    save();
+                    render();
+                    alert("Demo Mode: AI added some essential suggestions!");
+                    return;
+                }
+
+                const prompt = `Suggest 5 essential packing items for a trip to ${dest}. Return ONLY a JSON array of strings. Example: ["Item 1", "Item 2"]`;
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                
+                const resultText = data.candidates[0].content.parts[0].text;
+                const jsonMatch = resultText.match(/\[.*\]/s);
+                if (!jsonMatch) throw new Error("Invalid AI response format.");
+                const items = JSON.parse(jsonMatch[0]);
+                
+                let aiCat = tripData[currentTrip].find(c => c.category === 'AI Suggestions');
+                if (!aiCat) {
+                    aiCat = { category: 'AI Suggestions', items: [] };
+                    tripData[currentTrip].push(aiCat);
+                }
+                items.forEach(it => aiCat.items.push({ name: it, packed: false }));
+                save();
+                render();
+                alert("AI added some suggestions!");
+            } catch (e) {
+                console.error(e);
+                alert("AI Suggestion Error: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Suggest';
+            }
+        });
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+
+        // Background particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        render();
+    </script>
+</body>
+</html>

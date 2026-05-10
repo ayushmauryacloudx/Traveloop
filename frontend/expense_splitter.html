@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Splitter - Traveloop</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep: #071C3F;
+            --azure-blue: #1A6EF5;
+            --sky-blue: #4FA3F7;
+            --journey-gold: #F5C842;
+            --mist-white: #E8F0FE;
+            --slate-muted: #8BA7D4;
+            --font-heading: 'Playfair Display', serif;
+            --font-ui: 'DM Sans', sans-serif;
+            
+            /* Theme Variables - Default Dark */
+            --bg-color: var(--ocean-deep);
+            --text-color: var(--mist-white);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(139, 167, 212, 0.15);
+            --nav-bg: rgba(7, 28, 63, 0.6);
+            --input-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode {
+            --bg-color: #F0F4F8;
+            --text-color: #071C3F;
+            --card-bg: #FFFFFF;
+            --card-border: rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #E1E8F0;
+            --slate-muted: #546E7A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-ui); min-height: 100vh; position: relative; overflow-x: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .background-effects { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; pointer-events: none; }
+        .particles { position: absolute; inset: 0; z-index: 0; }
+        .glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; transition: opacity 0.5s; }
+        body.light-mode .glow { opacity: 0.1; }
+        
+        .glow-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%); top: -100px; right: -200px; }
+        .glow-2 { width: 400px; height: 400px; background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%); bottom: -100px; left: -100px; opacity: 0.2; }
+        
+        .particle { position: absolute; width: 2px; height: 2px; background-color: var(--text-color); border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite alternate; }
+
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 100; transition: background 0.4s; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color); }
+        .brand-logo { height: 80px; width: 80px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(26, 110, 245, 0.4)); }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--slate-muted); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-color); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--azure-blue); cursor: pointer; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 5%; padding-bottom: 100px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-family: var(--font-heading); font-size: 2.8rem; margin-bottom: 10px; color: var(--text-color); }
+        .header p { color: var(--slate-muted); font-size: 1.1rem; }
+
+        .splitter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+        @media (max-width: 850px) { 
+            .splitter-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 30px; backdrop-filter: blur(10px); transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        body.light-mode .card { box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .card:hover { transform: translateY(-5px); border-color: var(--azure-blue); }
+        .card h2 { font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 25px; color: var(--journey-gold); display: flex; align-items: center; gap: 12px; }
+
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; font-size: 0.95rem; color: var(--slate-muted); font-weight: 500; }
+        .input-wrap { position: relative; }
+        .input-wrap i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--sky-blue); opacity: 0.7; }
+        input { width: 100%; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 18px 14px 50px; color: var(--text-color); font-family: inherit; outline: none; transition: 0.3s; font-size: 1rem; }
+        input:focus { border-color: var(--azure-blue); background: var(--card-bg); box-shadow: 0 0 15px rgba(26, 110, 245, 0.1); }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.1rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--azure-blue), var(--sky-blue)); color: white; box-shadow: 0 8px 20px rgba(26, 110, 245, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(26, 110, 245, 0.4); filter: brightness(1.1); }
+
+        .summary-card { text-align: center; }
+        .total-box { margin-bottom: 35px; padding: 20px; background: rgba(26, 110, 245, 0.05); border-radius: 20px; border: 1px solid rgba(26, 110, 245, 0.1); }
+        .total-amount { font-size: 3rem; font-family: var(--font-heading); color: var(--text-color); font-weight: 700; text-shadow: 0 0 20px rgba(26, 110, 245, 0.1); }
+        .total-label { color: var(--slate-muted); text-transform: uppercase; letter-spacing: 3px; font-size: 0.85rem; margin-top: 8px; font-weight: 600; }
+
+        .balances { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+        .balance-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: var(--input-bg); border-radius: 50px; border: 1px solid var(--card-border); transition: 0.3s; }
+        .balance-row:hover { background: var(--card-bg); transform: scale(1.02); }
+        .balance-name { font-weight: 600; font-size: 1.05rem; }
+        .balance-val { font-weight: 800; font-family: var(--font-heading); font-size: 1.1rem; }
+
+        .expense-list { list-style: none; display: flex; flex-direction: column; gap: 15px; text-align: left; margin-top: 20px; }
+        .expense-item { background: var(--input-bg); border-radius: 16px; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--card-border); animation: slideIn 0.4s ease-out backwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .expense-info h4 { font-size: 1.1rem; margin-bottom: 4px; color: var(--text-color); }
+        .expense-info p { font-size: 0.85rem; color: var(--slate-muted); }
+        .expense-amount { font-weight: 700; color: var(--journey-gold); font-size: 1.2rem; font-family: var(--font-heading); }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div id="particles" class="particles"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="traveloop-screens.html"><img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo" class="brand-logo" style="cursor: pointer;"></a>
+        </div>
+        <div class="nav-links">
+            <a href="traveloop-screens.html">Explore</a>
+            <a href="user_trips.html">My Trips</a>
+            <a href="community_tab.html">Community</a>
+            <a href="itinerary_view.html">Itinerary View</a>
+            <a href="packing_checklist.html">Packing checklist</a>
+            <a href="expense_splitter.html" class="active">Expense Splitter</a>
+        </div>
+        <div class="nav-profile" style="display: flex; align-items: center; gap: 20px;">
+            <button id="theme-toggle" style="background: none; border: none; color: var(--journey-gold); cursor: pointer; font-size: 1.2rem;">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <a href="userpanel.html"><img src="https://ui-avatars.com/api/?name=User&background=1A6EF5&color=fff" alt="Profile" class="avatar"></a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Expense Splitter</h1>
+            <p>Track shared costs and see who owes what.</p>
+        </div>
+
+        <div class="splitter-grid">
+            <!-- Left Side: Add Expense -->
+            <div class="card">
+                <h2><i class="fa-solid fa-plus-circle"></i> Add Expense</h2>
+                <div class="form-group">
+                    <label>Description</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-tag"></i>
+                        <input type="text" id="desc" placeholder="e.g. Dinner, Taxi, Tickets">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Amount ($)</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <input type="number" id="amount" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Paid By</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="payer" placeholder="Name of payer">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Split Between (Comma separated names)</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-users"></i>
+                        <input type="text" id="participants" placeholder="e.g. Alex, Sarah, Mike">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addExpense()">
+                    <i class="fa-solid fa-receipt"></i> Log Expense
+                </button>
+            </div>
+
+            <!-- Right Side: Summary -->
+            <div class="card summary-card">
+                <div class="total-box">
+                    <div class="total-amount" id="total-val">$0.00</div>
+                    <div class="total-label">Total Trip Expenses</div>
+                </div>
+
+                <h2><i class="fa-solid fa-chart-pie"></i> Balances</h2>
+                <div id="balance-list" class="balances">
+                    <p style="color: var(--slate-muted); padding: 20px;">Add an expense to see balances.</p>
+                </div>
+
+                <h2 style="margin-top: 30px;"><i class="fa-solid fa-history"></i> Recent</h2>
+                <ul id="expense-history" class="expense-list">
+                    <!-- History items will appear here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let expenses = JSON.parse(localStorage.getItem('tripExpenses')) || [];
+
+        function addExpense() {
+            const desc = document.getElementById('desc').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const payer = document.getElementById('payer').value;
+            let partsInput = document.getElementById('participants').value;
+            
+            if (!partsInput) partsInput = payer; // Default to payer if empty
+            const parts = partsInput.split(',').map(s => s.trim()).filter(s => s);
+
+            if (!desc || isNaN(amount) || !payer || parts.length === 0) {
+                alert('Please fill in all fields correctly.');
+                return;
+            }
+
+            const expense = {
+                id: Date.now(),
+                desc,
+                amount,
+                payer,
+                participants: parts,
+                date: new Date().toLocaleDateString()
+            };
+
+            expenses.push(expense);
+            localStorage.setItem('tripExpenses', JSON.stringify(expenses));
+            
+            // Clear inputs
+            document.getElementById('desc').value = '';
+            document.getElementById('amount').value = '';
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            const history = document.getElementById('expense-history');
+            const totalVal = document.getElementById('total-val');
+            const balanceList = document.getElementById('balance-list');
+
+            history.innerHTML = '';
+            let total = 0;
+            let balances = {};
+
+            expenses.slice().reverse().forEach(exp => {
+                total += exp.amount;
+                
+                // History HTML
+                const li = document.createElement('li');
+                li.className = 'expense-item';
+                li.innerHTML = `
+                    <div class="expense-info">
+                        <h4>${exp.desc}</h4>
+                        <p>Paid by ${exp.payer} • ${exp.date}</p>
+                    </div>
+                    <div class="expense-amount">$${exp.amount.toFixed(2)}</div>
+                `;
+                history.appendChild(li);
+
+                // Calculate Balances
+                const share = exp.amount / exp.participants.length;
+                
+                // Payer is owed money
+                balances[exp.payer] = (balances[exp.payer] || 0) + exp.amount;
+                
+                // Everyone owes their share
+                exp.participants.forEach(p => {
+                    balances[p] = (balances[p] || 0) - share;
+                });
+            });
+
+            totalVal.innerText = `$${total.toFixed(2)}`;
+
+            // Render Balances
+            balanceList.innerHTML = '';
+            const names = Object.keys(balances);
+            if (names.length === 0) {
+                balanceList.innerHTML = '<p style="color: var(--slate-muted); padding: 20px;">Add an expense to see balances.</p>';
+            } else {
+                names.forEach(name => {
+                    const val = balances[name];
+                    const div = document.createElement('div');
+                    div.className = 'balance-row';
+                    div.innerHTML = `
+                        <span class="balance-name">${name}</span>
+                        <span class="balance-val" style="color: ${val >= 0 ? '#34d399' : '#f87171'}">
+                            ${val >= 0 ? 'Owed $' + val.toFixed(2) : 'Owes $' + Math.abs(val).toFixed(2)}
+                        </span>
+                    `;
+                    balanceList.appendChild(div);
+                });
+            }
+        }
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        
+        // Load preference
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+
+        // Background particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Initial Load
+        updateUI();
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

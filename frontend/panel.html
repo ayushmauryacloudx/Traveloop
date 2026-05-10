@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveloop — Admin Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --ocean: #05162e;
+            --ocean-deep: #020a17;
+            --azure: #1a6ef5;
+            --sky: #4fa3f7;
+            --mist: #e8f0fe;
+            --slate: #8ba7d4;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-hover: rgba(255, 255, 255, 0.06);
+            --journey-gold: #f5c842;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--ocean-deep);
+            color: var(--mist);
+            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            background: radial-gradient(circle at top right, #0a1f44 0%, var(--ocean-deep) 100%);
+        }
+
+        /* ── Background Effects ── */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+        }
+
+        .glow-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--azure) 0%, transparent 70%);
+            top: -100px;
+            right: -200px;
+        }
+
+        .glow-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--sky) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            opacity: 0.2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--mist);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.2;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0.8;
+                transform: scale(1.5);
+            }
+        }
+
+        /* ── Layout ── */
+        .admin-wrapper {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── Top Bar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 40px;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(5, 22, 46, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-left: 3%;
+        }
+
+        .logo-img-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(26, 110, 245, 0.4);
+            cursor: pointer;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: translateY(5px);
+        }
+
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, var(--mist) 40%, var(--sky));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--journey-gold);
+            background: rgba(245, 200, 66, 0.12);
+            border: 1px solid rgba(245, 200, 66, 0.3);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        /* Search + Controls */
+        .topbar-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 520px;
+            margin: 0 32px;
+        }
+
+        .search-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+            border-radius: 10px;
+            padding: 10px 16px 10px 38px;
+            color: var(--mist);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .search-input::placeholder {
+            color: var(--slate);
+        }
+
+        .search-input:focus {
+            border-color: var(--azure);
+            background: rgba(26, 110, 245, 0.08);
+        }
+
+        .ctrl-btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+            color: var(--mist);
+            border-radius: 10px;
+            padding: 9px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(26, 110, 245, 0.2);
+            border-color: var(--azure);
+        }
+
+        /* Dropdown Support */
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(5, 22, 46, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px 0;
+            margin-top: 10px;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .filter-group:hover .filter-dropdown {
+            display: block;
+        }
+
+        .filter-dropdown a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--slate);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+
+        .filter-dropdown a:hover {
+            background: rgba(26, 110, 245, 0.15);
+            color: var(--mist);
+        }
+
+        /* Avatar */
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .notif-btn {
+            width: 38px;
+            height: 38px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .notif-btn:hover {
+            background: rgba(26, 110, 245, 0.15);
+            border-color: var(--azure);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 7px;
+            height: 7px;
+            background: var(--journey-gold);
+            border-radius: 50%;
+            border: 1.5px solid var(--ocean-deep);
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--azure), var(--sky));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(26, 110, 245, 0.3);
+        }
+
+        /* ── Nav Tabs ── */
+        .nav-tabs {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 40px 0;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(5, 22, 46, 0.4);
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--slate);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+            border-radius: 6px 6px 0 0;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--mist);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-tab.active {
+            color: var(--sky);
+            border-bottom-color: var(--azure);
+            background: rgba(26, 110, 245, 0.08);
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            padding: 32px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ── Section Header ── */
+        .section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--mist);
+        }
+
+        .section-sub {
+            font-size: 0.85rem;
+            color: var(--slate);
+            margin-top: 4px;
+        }
+
+        .view-all-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--sky);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-all-btn:hover {
+            background: rgba(79, 163, 247, 0.1);
+            border-color: var(--sky);
+        }
+
+        /* ── KPI Cards ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .kpi-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 16px;
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            cursor: default;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--azure), var(--sky));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 110, 245, 0.12);
+            background: var(--card-hover);
+        }
+
+        .kpi-card:hover::before {
+            opacity: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--slate);
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--mist);
+            line-height: 1;
+        }
+
+        .kpi-delta {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .kpi-delta.up {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .kpi-delta.down {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        .kpi-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* ── Charts Row ── */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 18px;
+        }
+
+        .chart-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .chart-card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .chart-card-sub {
+            font-size: 0.78rem;
+            color: var(--slate);
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 220px;
+        }
+
+        /* ── Bottom Row ── */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        /* ── User Table ── */
+        .table-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 16px;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .table-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--slate);
+            padding: 0 12px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+            border-bottom: 1px solid rgba(79, 163, 247, 0.06);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        tbody td {
+            padding: 12px;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--azure-blue), #6c3cdb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--slate);
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .status-pill.active {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.25);
+        }
+
+        .status-pill.inactive {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .status-pill.pending {
+            background: rgba(245, 200, 66, 0.1);
+            color: var(--journey-gold);
+            border: 1px solid rgba(245, 200, 66, 0.25);
+        }
+
+        /* ── Popular Cities List ── */
+        .cities-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .city-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(79, 163, 247, 0.07);
+            transition: background 0.15s;
+        }
+
+        .city-item:last-child {
+            border-bottom: none;
+        }
+
+        .city-rank {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--slate);
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .city-emoji {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .city-info {
+            flex: 1;
+        }
+
+        .city-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .city-country {
+            font-size: 0.75rem;
+            color: var(--slate);
+        }
+
+        .city-bar-wrap {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .city-bar {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--azure), var(--sky));
+        }
+
+        .city-pct {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sky);
+            flex-shrink: 0;
+            width: 36px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="admin-wrapper">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <a href="traveloop-screens.html" class="logo-img-wrapper">
+                    <img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo"
+                        class="logo-img">
+                </a>
+                <span class="brand-badge">Admin</span>
+            </div>
+
+            <div class="topbar-center">
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search users, cities, trips...">
+                </div>
+                <div class="filter-group">
+                    <button class="ctrl-btn">⊞ Group by</button>
+                    <div class="filter-dropdown">
+                        <a href="#">Status</a>
+                        <a href="#">Country</a>
+                        <a href="#">Joined Date</a>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="ctrl-btn">⧉ Filter</button>
+                    <div class="filter-dropdown">
+                        <a href="#">Active Only</a>
+                        <a href="#">Flagged Only</a>
+                        <a href="#">Pending Only</a>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="ctrl-btn">↕ Sort by</button>
+                    <div class="filter-dropdown">
+                        <a href="#">Name (A-Z)</a>
+                        <a href="#">Trips Count</a>
+                        <a href="#">Newest Members</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="notif-btn">
+                    🔔
+                    <div class="notif-dot"></div>
+                </div>
+                <div class="avatar">AD</div>
+            </div>
+        </header>
+
+        <!-- Nav Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab(this)">👤 Manage Users</button>
+            <button class="nav-tab" onclick="switchTab(this)">🏙️ Popular Cities</button>
+            <button class="nav-tab" onclick="switchTab(this)">🎯 Popular Activities</button>
+            <button class="nav-tab" onclick="switchTab(this)">📈 User Trends & Analytics</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Section Header -->
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Dashboard Overview</div>
+                    <div class="section-sub">Welcome back, Admin — here's what's happening today.</div>
+                </div>
+                <button class="view-all-btn">Export Report ↗</button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:rgba(26,110,245,0.15)">✈️</div>
+                    <div class="kpi-label">Total Users</div>
+                    <div class="kpi-value">84,291</div>
+                    <div class="kpi-delta up">▲ 12.4% this month</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:rgba(74,222,128,0.12)">🗺️</div>
+                    <div class="kpi-label">Active Trips</div>
+                    <div class="kpi-value">3,748</div>
+                    <div class="kpi-delta up">▲ 8.1% vs last week</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:rgba(245,200,66,0.12)">🌍</div>
+                    <div class="kpi-label">Cities Explored</div>
+                    <div class="kpi-value">214</div>
+                    <div class="kpi-delta up">▲ 5 new cities</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:rgba(248,113,113,0.1)">⚠️</div>
+                    <div class="kpi-label">Flagged Accounts</div>
+                    <div class="kpi-value">17</div>
+                    <div class="kpi-delta down">▼ 3 from yesterday</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-card-title">User Growth Trend</div>
+                    <div class="chart-card-sub">Monthly active users over the last 8 months</div>
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-title">Trip Distribution</div>
+                    <div class="chart-card-sub">Breakdown by travel category</div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="bottom-row">
+
+                <!-- User Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Recent Users</div>
+                        <button class="view-all-btn">View All</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Trips</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm">SA</div>
+                                            <div>
+                                                <div class="user-name">Sophia A.</div>
+                                                <div class="user-email">sophia@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>12</td>
+                                    <td><span class="status-pill active">Active</span></td>
+                                    <td>May 2, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#F5C842,#e07c00)">RK</div>
+                                            <div>
+                                                <div class="user-name">Rahul K.</div>
+                                                <div class="user-email">rahul@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>5</td>
+                                    <td><span class="status-pill pending">Pending</span></td>
+                                    <td>Apr 28, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#4ade80,#059669)">ML</div>
+                                            <div>
+                                                <div class="user-name">Maria L.</div>
+                                                <div class="user-email">maria@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>23</td>
+                                    <td><span class="status-pill active">Active</span></td>
+                                    <td>Apr 14, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#f87171,#b91c1c)">JD</div>
+                                            <div>
+                                                <div class="user-name">James D.</div>
+                                                <div class="user-email">james@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>1</td>
+                                    <td><span class="status-pill inactive">Inactive</span></td>
+                                    <td>Mar 30, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#c084fc,#7c3aed)">AN</div>
+                                            <div>
+                                                <div class="user-name">Aisha N.</div>
+                                                <div class="user-email">aisha@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>8</td>
+                                    <td><span class="status-pill active">Active</span></td>
+                                    <td>Mar 18, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#6366f1,#4338ca)">LW</div>
+                                            <div>
+                                                <div class="user-name">Liam W.</div>
+                                                <div class="user-email">liam@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>14</td>
+                                    <td><span class="status-pill active">Active</span></td>
+                                    <td>Mar 10, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#ec4899,#be185d)">EP</div>
+                                            <div>
+                                                <div class="user-name">Emma P.</div>
+                                                <div class="user-email">emma@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>3</td>
+                                    <td><span class="status-pill active">Active</span></td>
+                                    <td>Feb 28, 2026</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar-sm"
+                                                style="background:linear-gradient(135deg,#f97316,#c2410c)">OT</div>
+                                            <div>
+                                                <div class="user-name">Oliver T.</div>
+                                                <div class="user-email">oliver@mail.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>0</td>
+                                    <td><span class="status-pill inactive">Inactive</span></td>
+                                    <td>Feb 15, 2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Popular Cities -->
+                <div class="cities-card">
+                    <div class="table-header">
+                        <div class="table-title">🏙️ Popular Cities</div>
+                        <button class="view-all-btn">View All</button>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#1</div>
+                        <div class="city-emoji">🇯🇵</div>
+                        <div class="city-info">
+                            <div class="city-name">Tokyo</div>
+                            <div class="city-country">Japan</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:92%"></div>
+                        </div>
+                        <div class="city-pct">92%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#2</div>
+                        <div class="city-emoji">🇫🇷</div>
+                        <div class="city-info">
+                            <div class="city-name">Paris</div>
+                            <div class="city-country">France</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:78%"></div>
+                        </div>
+                        <div class="city-pct">78%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#3</div>
+                        <div class="city-emoji">🇮🇹</div>
+                        <div class="city-info">
+                            <div class="city-name">Rome</div>
+                            <div class="city-country">Italy</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:64%"></div>
+                        </div>
+                        <div class="city-pct">64%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#4</div>
+                        <div class="city-emoji">🇦🇪</div>
+                        <div class="city-info">
+                            <div class="city-name">Dubai</div>
+                            <div class="city-country">UAE</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:55%"></div>
+                        </div>
+                        <div class="city-pct">55%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#5</div>
+                        <div class="city-emoji">🇮🇳</div>
+                        <div class="city-info">
+                            <div class="city-name">Mumbai</div>
+                            <div class="city-country">India</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:43%"></div>
+                        </div>
+                        <div class="city-pct">43%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#6</div>
+                        <div class="city-emoji">🇺🇸</div>
+                        <div class="city-info">
+                            <div class="city-name">New York</div>
+                            <div class="city-country">USA</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:38%"></div>
+                        </div>
+                        <div class="city-pct">38%</div>
+                    </div>
+                    <div class="city-item">
+                        <div class="city-rank">#7</div>
+                        <div class="city-emoji">🇹Ｈ</div>
+                        <div class="city-info">
+                            <div class="city-name">Bangkok</div>
+                            <div class="city-country">Thailand</div>
+                        </div>
+                        <div class="city-bar-wrap">
+                            <div class="city-bar" style="width:31%"></div>
+                        </div>
+                        <div class="city-pct">31%</div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Particle Init -->
+    <script src="panel.js"></script>
+
+    <script src="auth.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

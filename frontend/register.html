@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traveloop — Auth</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ocean-deep: #071C3F;
+      --azure-blue: #1A6EF5;
+      --sky-blue: #4FA3F7;
+      --journey-gold: #F5C842;
+      --mist-white: #E8F0FE;
+      --slate-muted: #8BA7D4;
+      --glass: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.12);
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background-color: var(--ocean-deep);
+      color: var(--mist-white);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .background-effects {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+    }
+
+    .glow-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--azure-blue) 0%, transparent 70%);
+      top: -100px;
+      right: -200px;
+    }
+
+    .glow-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--sky-blue) 0%, transparent 70%);
+      bottom: -100px;
+      left: -100px;
+      opacity: 0.2;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background-color: var(--mist-white);
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: twinkle infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% {
+        opacity: 0.2;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0.8;
+        transform: scale(1.5);
+      }
+    }
+
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── PAGE SYSTEM ────────────────────────────────────────────── */
+    .page {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+      z-index: 1;
+      background: transparent;
+    }
+
+    .page.hidden-left {
+      transform: translateX(-30%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .page.hidden-right {
+      transform: translateX(30%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .page.active {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── GLOBE ──────────────────────────────────────────────────── */
+    .globe-wrap {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .earth-container {
+      width: 320px;
+      height: 320px;
+      position: relative;
+      filter: drop-shadow(0 0 55px rgba(26, 110, 245, 0.5));
+    }
+
+    .earth-svg {
+      width: 100%;
+      height: 100%;
+      animation: spinEarth 18s linear infinite;
+      transform-origin: center;
+    }
+
+    @keyframes spinEarth {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .earth-glow {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79, 163, 247, 0.15) 0%, transparent 70%);
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: .8
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 1
+      }
+    }
+
+    .orbit-ring {
+      position: absolute;
+      inset: -28px;
+      border-radius: 50%;
+      border: 1px solid rgba(79, 163, 247, 0.25);
+      animation: rotateRing 8s linear infinite;
+    }
+
+    .orbit-ring::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--journey-gold);
+      border-radius: 50%;
+      top: 50%;
+      left: -5px;
+      transform: translateY(-50%);
+      box-shadow: 0 0 12px var(--journey-gold);
+    }
+
+    @keyframes rotateRing {
+      to {
+        transform: rotate(-360deg);
+      }
+    }
+
+    .orbit-ring-2 {
+      position: absolute;
+      inset: -52px;
+      border-radius: 50%;
+      border: 1px dashed rgba(79, 163, 247, 0.15);
+      animation: rotateRing2 14s linear infinite;
+    }
+
+    .orbit-ring-2::after {
+      content: '';
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: #a78bfa;
+      border-radius: 50%;
+      bottom: 10px;
+      right: 10px;
+      box-shadow: 0 0 10px #a78bfa;
+    }
+
+    @keyframes rotateRing2 {
+      from {
+        transform: rotate(30deg)
+      }
+
+      to {
+        transform: rotate(390deg)
+      }
+    }
+
+    .tagline {
+      text-align: center;
+      z-index: 2;
+    }
+
+    .tagline h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--mist-white);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .tagline h1 span {
+      color: var(--sky-blue);
+    }
+
+    .tagline p {
+      margin-top: .5rem;
+      font-size: .9rem;
+      color: var(--slate-muted);
+      font-weight: 300;
+      letter-spacing: .04em;
+    }
+
+    /* Floating pins */
+    .pin {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: .75rem;
+      color: var(--mist-white);
+      z-index: 3;
+      white-space: nowrap;
+      animation: drift 4s ease-in-out infinite;
+    }
+
+    .pin::before {
+      content: '📍';
+      font-size: .85rem;
+    }
+
+    .pin-1 {
+      top: 18%;
+      left: 8%;
+      animation-delay: 0s
+    }
+
+    .pin-2 {
+      top: 30%;
+      right: 5%;
+      animation-delay: 1.2s
+    }
+
+    .pin-3 {
+      bottom: 22%;
+      left: 10%;
+      animation-delay: 2.1s
+    }
+
+    .pin-4 {
+      bottom: 35%;
+      right: 8%;
+      animation-delay: .7s
+    }
+
+    @keyframes drift {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    /* ── RIGHT CARD PANEL ───────────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-radius: 28px;
+      padding: 2.4rem 2.4rem;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 40px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* ── CARD SCROLL for register (more fields) ─────────────────── */
+    #register-page .card {
+      max-height: 96vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(79, 163, 247, 0.3) transparent;
+    }
+
+    #register-page .card::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #register-page .card::-webkit-scrollbar-thumb {
+      background: rgba(79, 163, 247, 0.3);
+      border-radius: 4px;
+    }
+
+    /* brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.6rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--azure-blue), var(--sky-blue));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--mist-white);
+      letter-spacing: -.02em;
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: var(--mist-white);
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+
+    .card .subtitle {
+      font-size: .83rem;
+      color: var(--slate-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Field */
+    .field {
+      margin-bottom: .95rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--slate-muted);
+      margin-bottom: .4rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.3);
+      font-size: .9rem;
+      pointer-events: none;
+      transition: color .2s;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: .82rem 1rem .82rem 2.6rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      border-radius: 12px;
+      color: var(--mist-white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      outline: none;
+      transition: all .25s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .field select option {
+      background: #0d1f3c;
+      color: #e8f0fe;
+    }
+
+    .field input::placeholder {
+      color: rgba(232, 240, 254, 0.28);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(79, 163, 247, 0.5);
+      background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 0 0 3px rgba(79, 163, 247, 0.12);
+    }
+
+    .field input:focus+.input-icon,
+    .input-wrap:focus-within .input-icon {
+      color: var(--sky-blue);
+    }
+
+    /* password strength */
+    .strength-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .strength-bar span {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background .3s;
+    }
+
+    .strength-bar span.weak {
+      background: #f87171;
+    }
+
+    .strength-bar span.fair {
+      background: #fb923c;
+    }
+
+    .strength-bar span.good {
+      background: #4fa3f7;
+    }
+
+    .strength-bar span.strong {
+      background: #34d399;
+    }
+
+    .strength-label {
+      font-size: .72rem;
+      color: var(--slate-muted);
+      margin-top: 4px;
+    }
+
+    /* Primary button */
+    .btn-primary {
+      width: 100%;
+      margin-top: 1.2rem;
+      padding: .92rem;
+      background: linear-gradient(135deg, var(--azure-blue) 0%, #2a85ff 100%);
+      border: none;
+      border-radius: 13px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .93rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s;
+      box-shadow: 0 8px 24px rgba(26, 110, 245, 0.4);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(26, 110, 245, 0.55);
+    }
+
+    .btn-primary:hover::after {
+      opacity: 1;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* ── ANIMATIONS on page load ─────────────────────────────────── */
+    .anim-up {
+      animation: fadeUp .8s cubic-bezier(.16, 1, .3, 1) forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .anim-right {
+      animation: fadeRight .8s cubic-bezier(.16, 1, .3, 1) .15s forwards;
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeRight {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width:860px) {
+      .page {
+        flex-direction: column;
+        overflow: auto;
+      }
+
+      .earth-container {
+        width: 180px;
+        height: 180px;
+      }
+
+      .tagline h1 {
+        font-size: 1.6rem;
+      }
+
+      .pin {
+        display: none;
+      }
+
+      #register-page .card {
+        max-height: none;
+        overflow: visible;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="background-effects">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+  <div class="particles" id="particles"></div>
+
+  <!-- ══════════════════════════════════════════════════════════
+     PAGE 1 — LOGIN
+══════════════════════════════════════════════════════════════ -->
+  <div class="page active" id="login-page" style="flex-direction: row;">
+
+    <!-- GLOBE ANIMATION (LEFT) -->
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+      <div class="globe-wrap anim-up">
+        <div class="earth-container">
+          <div class="earth-glow"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring-2"></div>
+          <svg class="earth-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="eg" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#1a6ef5" />
+                <stop offset="60%" stop-color="#0d4db5" />
+                <stop offset="100%" stop-color="#071d4a" />
+              </radialGradient>
+              <radialGradient id="sg" cx="30%" cy="30%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.18)" />
+                <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+              </radialGradient>
+              <clipPath id="ec">
+                <circle cx="100" cy="100" r="90" />
+              </clipPath>
+            </defs>
+            <circle cx="100" cy="100" r="90" fill="url(#eg)" />
+            <g clip-path="url(#ec)" fill="rgba(79,163,247,0.35)" stroke="rgba(79,163,247,0.5)" stroke-width="0.5">
+              <path d="M30 55Q40 45 55 50Q65 58 62 70Q55 80 45 82Q32 78 28 65Z" />
+              <path d="M52 90Q60 88 65 100Q67 118 58 130Q48 138 42 128Q38 112 42 98Z" />
+              <path d="M90 48Q100 42 110 46Q115 55 108 62Q98 66 90 60Z" />
+              <path d="M94 68Q108 65 114 78Q118 100 112 120Q104 134 94 130Q84 122 82 102Q80 82 88 72Z" />
+              <path d="M112 42Q140 38 160 50Q172 60 168 75Q155 88 138 85Q120 80 112 68Z" />
+              <path d="M148 112Q162 108 168 120Q166 134 155 136Q144 133 142 122Z" />
+            </g>
+            <circle cx="100" cy="100" r="90" fill="url(#sg)" />
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(79,163,247,0.4)" stroke-width="4" />
+            <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(79,163,247,0.1)" stroke-width="4" />
+          </svg>
+        </div>
+        <div class="tagline">
+          <h1>Explore the <span>World</span><br>Your Way</h1>
+          <p>Plan smarter. Travel better. Remember forever.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN CARD (RIGHT) -->
+    <div
+      style="flex: 1; display: flex; align-items: center; justify-content: flex-end; padding-right: 10%; z-index: 2;">
+      <div class="card anim-right" style="margin: 0;">
+        <!-- Logo as per wireframe -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+          <div
+            style="width: 75px; height: 75px; border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+            <img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo"
+              style="width: 100%; height: 100%; object-fit: cover; transform: scale(1.5) translateY(2%);">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            <input type="email" placeholder="hello@traveloop.com" id="login-email">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" placeholder="••••••••••" id="login-pass">
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+          <button class="btn-primary" style="margin-top: 0;" onclick="handleLogin()">Login</button>
+          <button class="btn-primary"
+            style="margin-top: 0; background: rgba(255,255,255,0.08); backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); border: 1px solid rgba(255,255,255,0.15); box-shadow: none;"
+            onclick="goTo('register')">Register</button>
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;gap:10px;margin: 0.25rem 0;">
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
+            <span style="font-size:0.72rem;color:var(--slate-muted);font-family:'DM Sans',sans-serif;">or</span>
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <button class="btn-primary"
+            style="margin-top: 0; background: rgba(245,200,66,0.1); backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); border: 1px solid rgba(245,200,66,0.35); color: var(--journey-gold); box-shadow: 0 4px 16px rgba(245,200,66,0.15);"
+            onclick="goTo('admin')">🔐 Admin Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+     PAGE 2 — REGISTER
+══════════════════════════════════════════════════════════════ -->
+  <div class="page hidden-right" id="register-page" style="flex-direction: row;">
+
+    <!-- REGISTER CARD (LEFT) -->
+    <div style="flex: 1; display: flex; align-items: center; padding-left: 10%; z-index: 2;">
+      <div class="card" style="margin: 0;">
+        <!-- Logo as per wireframe -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+          <div
+            style="width: 75px; height: 75px; border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+            <img src="https://i.ibb.co/r2n2J4Qd/Chat-GPT-Image-May-10-2026-10-22-48-AM.png" alt="Traveloop Logo"
+              style="width: 100%; height: 100%; object-fit: cover; transform: scale(1.5) translateY(2%);">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" placeholder="Full Name" id="reg-name">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Date of Birth</label>
+          <div class="input-wrap">
+            <span class="input-icon">🎂</span>
+            <input type="date" id="reg-dob" style="color-scheme:dark;">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            <input type="email" placeholder="you@example.com" id="reg-email" oninput="validateEmail(this)">
+          </div>
+          <div id="email-hint" style="font-size:.72rem;color:var(--slate-muted);margin-top:4px;"></div>
+        </div>
+
+        <!-- Mobile No -->
+        <div class="field">
+          <label>Mobile No</label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" placeholder="+1 234 567 8900" id="reg-mobile">
+          </div>
+        </div>
+
+        <!-- Address Group -->
+        <div class="field">
+          <label>Address</label>
+          <div style="display: flex; gap: 8px;">
+            <div class="input-wrap" style="flex: 1;">
+              <span class="input-icon">🏙️</span>
+              <input type="text" placeholder="City" id="reg-city">
+            </div>
+            <div class="input-wrap" style="flex: 1;">
+              <span class="input-icon">🌍</span>
+              <input type="text" placeholder="Country" id="reg-country">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Set Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" placeholder="Min. 8 characters" id="reg-pass" oninput="checkStrength(this)">
+          </div>
+          <div class="strength-bar">
+            <span id="sb1"></span><span id="sb2"></span><span id="sb3"></span><span id="sb4"></span>
+          </div>
+          <div class="strength-label" id="strength-label"></div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+          <button class="btn-primary" style="margin-top: 0;" onclick="handleRegister()">Start the tour</button>
+          <button class="btn-primary"
+            style="margin-top: 0; background: rgba(255,255,255,0.08); backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); border: 1px solid rgba(255,255,255,0.15); box-shadow: none;"
+            onclick="goTo('login')">Back to login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOBE ANIMATION (RIGHT) -->
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+      <div class="globe-wrap">
+        <div class="earth-container">
+          <div class="earth-glow"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring-2"></div>
+          <svg class="earth-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="eg2" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#1a6ef5" />
+                <stop offset="60%" stop-color="#0d4db5" />
+                <stop offset="100%" stop-color="#071d4a" />
+              </radialGradient>
+              <clipPath id="ec2">
+                <circle cx="100" cy="100" r="90" />
+              </clipPath>
+            </defs>
+            <circle cx="100" cy="100" r="90" fill="url(#eg2)" />
+            <g clip-path="url(#ec2)" fill="rgba(79,163,247,0.35)" stroke="rgba(79,163,247,0.5)" stroke-width="0.5">
+              <path d="M30 55Q40 45 55 50Q65 58 62 70Q55 80 45 82Q32 78 28 65Z" />
+              <path d="M52 90Q60 88 65 100Q67 118 58 130Q48 138 42 128Q38 112 42 98Z" />
+              <path d="M90 48Q100 42 110 46Q115 55 108 62Q98 66 90 60Z" />
+              <path d="M94 68Q108 65 114 78Q118 100 112 120Q104 134 94 130Q84 122 82 102Q80 82 88 72Z" />
+              <path d="M112 42Q140 38 160 50Q172 60 168 75Q155 88 138 85Q120 80 112 68Z" />
+              <path d="M148 112Q162 108 168 120Q166 134 155 136Q144 133 142 122Z" />
+            </g>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(79,163,247,0.4)" stroke-width="4" />
+          </svg>
+        </div>
+        <div class="tagline">
+          <h1>Start Your<br><span>Adventure</span></h1>
+          <p>Join thousands of travelers planning their dream trips.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+     PAGE 3 — ADMIN LOGIN
+══════════════════════════════════════════════════════════════ -->
+  <div class="page hidden-right" id="admin-page" style="flex-direction: row;">
+
+    <!-- GLOBE ANIMATION (LEFT) -->
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">
+      <div class="globe-wrap">
+        <div class="earth-container">
+          <div class="earth-glow"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring-2"></div>
+          <svg class="earth-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="eg3" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#f5c842" />
+                <stop offset="60%" stop-color="#b38b00" />
+                <stop offset="100%" stop-color="#3a2a00" />
+              </radialGradient>
+              <clipPath id="ec3">
+                <circle cx="100" cy="100" r="90" />
+              </clipPath>
+            </defs>
+            <circle cx="100" cy="100" r="90" fill="url(#eg3)" />
+            <g clip-path="url(#ec3)" fill="rgba(245,200,66,0.25)" stroke="rgba(245,200,66,0.45)" stroke-width="0.5">
+              <path d="M30 55Q40 45 55 50Q65 58 62 70Q55 80 45 82Q32 78 28 65Z" />
+              <path d="M52 90Q60 88 65 100Q67 118 58 130Q48 138 42 128Q38 112 42 98Z" />
+              <path d="M90 48Q100 42 110 46Q115 55 108 62Q98 66 90 60Z" />
+              <path d="M94 68Q108 65 114 78Q118 100 112 120Q104 134 94 130Q84 122 82 102Q80 82 88 72Z" />
+              <path d="M112 42Q140 38 160 50Q172 60 168 75Q155 88 138 85Q120 80 112 68Z" />
+            </g>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(245,200,66,0.4)" stroke-width="4" />
+          </svg>
+        </div>
+        <div class="tagline">
+          <h1>Admin <span style="-webkit-text-fill-color:var(--journey-gold);">Control</span><br>Panel</h1>
+          <p>Restricted access. Authorised personnel only.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN LOGIN CARD (RIGHT) -->
+    <div style="flex: 1; display: flex; align-items: center; justify-content: flex-end; padding-right: 10%; z-index: 2;">
+      <div class="card anim-right" style="margin: 0;">
+
+        <!-- Admin Icon -->
+        <div style="display:flex;justify-content:center;margin-bottom:1.5rem;">
+          <div style="width:75px;height:75px;border-radius:50%;background:rgba(245,200,66,0.08);backdrop-filter:blur(12px) saturate(180%);-webkit-backdrop-filter:blur(12px) saturate(180%);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 24px rgba(245,200,66,0.25);">
+            <img src="../image.png" alt="Traveloop Logo" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+        </div>
+
+        <!-- Admin badge -->
+        <div style="display:flex;justify-content:center;margin-bottom:1.75rem;">
+          <span style="background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);color:var(--journey-gold);font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:1.5px;padding:5px 14px;border-radius:20px;text-transform:uppercase;">🔐 Admin Access</span>
+        </div>
+
+        <div class="field">
+          <label>Admin ID</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" placeholder="admin" id="admin-id" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Admin Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" placeholder="••••••••••" id="admin-pass" autocomplete="off">
+          </div>
+          <small id="admin-error" style="color:#f87171;font-size:0.78rem;font-family:'DM Sans',sans-serif;margin-top:6px;display:none;"></small>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;margin-top:2rem;">
+          <button class="btn-primary" style="margin-top:0;background:linear-gradient(135deg,#b38b00,#f5c842);color:#1a1000;box-shadow:0 4px 20px rgba(245,200,66,0.35);" onclick="handleAdminLogin()">🔐 Access Admin Panel</button>
+          <button class="btn-primary"
+            style="margin-top:0;background:rgba(255,255,255,0.06);backdrop-filter:blur(12px) saturate(180%);-webkit-backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(255,255,255,0.12);box-shadow:none;"
+            onclick="goTo('login')">← Back to Login</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ══════════════════════════════════════════════════════════
+     SUCCESS TOAST
+══════════════════════════════════════════════════════════════ -->
+  <div id="toast" style="
+  position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px);
+  background: linear-gradient(135deg,#0d4db5,#1a6ef5);
+  color:white; padding:1rem 2rem; border-radius:50px;
+  font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:500;
+  box-shadow:0 8px 32px rgba(26,110,245,0.5);
+  transition: transform .5s cubic-bezier(.16,1,.3,1);
+  z-index:100; white-space:nowrap;
+">✈ Welcome aboard, Traveler!</div>
+
+  <!-- All auth logic (particles, transitions, forms) lives in auth.js -->
+  <script>
+    function goTo(pageId) {
+      const pages = ['login', 'register', 'admin'];
+      pages.forEach(p => {
+        const el = document.getElementById(p + '-page');
+        if (el) {
+          if (p === pageId) {
+            el.classList.remove('hidden-left', 'hidden-right');
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+            el.classList.add('hidden-right');
+          }
+        }
+      });
+    }
+  </script>
+  <script src="auth.js"></script>
+</body>
+
+</html>
