@@ -40,14 +40,14 @@ async function handleLogin() {
       const data = await res.json();
       localStorage.setItem('userInfo', JSON.stringify(data));
       showToast("✈ Welcome aboard, " + data.name + "!");
-      setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     } else {
       // Fallback for local testing if backend isn't running
       const existingUser = JSON.parse(localStorage.getItem('userInfo'));
       const fallbackName = existingUser && existingUser.email === email ? existingUser.name : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1).replace(/[._]/g, ' ');
       localStorage.setItem('userInfo', JSON.stringify({ name: fallbackName, email: email }));
       showToast("✈ Welcome aboard, " + fallbackName + "! (Local Mode)");
-      setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     }
   } catch (error) {
     // Fallback
@@ -55,7 +55,7 @@ async function handleLogin() {
     const fallbackName = existingUser && existingUser.email === email ? existingUser.name : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1).replace(/[._]/g, ' ');
     localStorage.setItem('userInfo', JSON.stringify({ name: fallbackName, email: email }));
     showToast("✈ Welcome aboard, " + fallbackName + "! (Offline Mode)");
-    setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
   }
 }
 
@@ -81,16 +81,16 @@ async function handleRegister() {
       const data = await res.json();
       localStorage.setItem('userInfo', JSON.stringify(data));
       showToast("✈ Registration successful! Welcome aboard!");
-      setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     } else {
       localStorage.setItem('userInfo', JSON.stringify({ name, email }));
       showToast("✈ Registration successful! (Local Mode)");
-      setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     }
   } catch (error) {
     localStorage.setItem('userInfo', JSON.stringify({ name, email }));
     showToast("✈ Registration successful! (Offline Mode)");
-    setTimeout(() => { window.location.href = 'traveloop-screens.html'; }, 1000);
+    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
   }
 }
 
