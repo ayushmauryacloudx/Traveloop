@@ -159,8 +159,14 @@ View the full UI mockup on Excalidraw:
 👉 [Traveloop Mockup](https://link.excalidraw.com/l/65VNwvy7c4X/22o30WE3bE4)
 
 ---
+## 👥 Team
 
-## 🧑‍💻 Team
+| Role | Name |
+|------|------|
+| 👑 Team Leader | Ayush Maurya |
+| 🧑‍💻 Member | Rahul Maurya |
+| 🧑‍💻 Member | Prince Kumar |
+| 🧑‍💻 Member | Priyanshu Tripathi |
 
 Built with ❤️ for the **Odoo Hackathon** by Team Traveloop.
 
